@@ -1,6 +1,13 @@
 node_modules/
 site/
 
+# 真實資料快照（由私有倉庫的 tools/export-snapshot.js 產出）。
+# 本倉庫只承載界面，永不接收這些檔案；萬一被複製過來，git 會直接忽略。
+static-data/
+api/text/
+api/amend/
+api/atomic/
+
 *.log
 .DS_Store
 Thumbs.db
