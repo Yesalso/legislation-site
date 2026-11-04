@@ -1,23 +1,26 @@
 #!/usr/bin/env node
 /**
- * export-static.js —— 生成可直接部署到 GitHub Pages 的静态站点（site/）
+ * export-static.js —— 生成可直接部署的静态站点（site/）
  *
- * 为什么要单独做一层导出，而不是直接把仓库丢给 Pages：
+ * 为什么要在仓库里另做一层导出，而不是把仓库直接丢给 Vercel / Pages：
  *   前端的全部数据都来自 server.js 的 /api/*，这些接口运行时读取仓库之外的
- *   Windows 绝对路径（AMEND_VAULT / AMEND_DOCS），而 server.js:13 的
- *   TW_VAULT_DIR 是硬编码且本机真实存在的目录。因此：
+ *   Windows 绝对路径（AMEND_VAULT / AMEND_DOCS / TW_VAULT_DIR）。云上没有这些目录，
+ *   所以数据必须提前固化——由 tools/export-snapshot.js 在本机生成 static-data/，
+ *   再由本工具把快照与页面拼成一个纯静态站点。
  *
- *   1) 绝不启动 server.js —— 一旦启动就会把真实的台湾法规内容序列化进站点。
- *   2) 直接输出「结构合法但为空」的快照，并用 js/static-api.js 在浏览器端
- *      拦截 /api/*，让所有页面正常渲染空状态，而不是满屏 404。
+ * 两种模式：
+ *   --data=<dir>  使用真实数据快照（static-data/，empty:false）。
+ *                 快照含 snapshot.json 索引 + text/ 正文分片 + atomic/ + amend/ 分区文件，
+ *                 由 js/static-api.js 在浏览器端接管 /api/*，按需懒加载。
+ *   不带 --data   生成「结构合法但为空」的快照（界面展示版），页面不 404 但无内容。
  *
  * 产物：
  *   site/*.html          11 个页面（排除 test.html 调试页），<head> 后注入拦截器
  *   site/css  site/js    原样复制
- *   site/api/snapshot.json   唯一的「数据」，empty: true
+ *   site/api/*           数据快照（真实或空）
  *   site/.nojekyll      防止 Jekyll 忽略下划线文件 / 解析 {{ }}
  *
- * 用法：node tools/export-static.js [--out=<dir>]
+ * 用法：node tools/export-static.js [--out=<dir>] [--data=static-data]
  */
 'use strict';
 
@@ -27,6 +30,8 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 const argOut = process.argv.slice(2).find((a) => a.startsWith('--out='));
 const SITE = argOut ? path.resolve(ROOT, argOut.slice('--out='.length)) : path.join(ROOT, 'site');
+const argData = process.argv.slice(2).find((a) => a.startsWith('--data='));
+const DATA = argData ? path.resolve(ROOT, argData.slice('--data='.length)) : null;
 
 // 对外发布的页面（test.html 是调试页，不发布）
 const PAGES = [
@@ -78,6 +83,28 @@ function copyDir(src, dst) {
   fs.cpSync(src, dst, { recursive: true });
 }
 
+/**
+ * 把 amend/*.json 裡的 doc_dir（本機絕對路徑）清空。
+ * 只處理這一層的單檔 JSON；目錄不存在或解析失敗則略過，不阻斷建置。
+ */
+function stripLocalPaths(dir) {
+  if (!fs.existsSync(dir)) return;
+  let n = 0;
+  for (const name of fs.readdirSync(dir)) {
+    if (!name.endsWith('.json')) continue;
+    const p = path.join(dir, name);
+    try {
+      const obj = JSON.parse(fs.readFileSync(p, 'utf8'));
+      if (typeof obj.doc_dir === 'string' && obj.doc_dir) {
+        obj.doc_dir = '';
+        fs.writeFileSync(p, JSON.stringify(obj), 'utf8');
+        n++;
+      }
+    } catch (e) { /* 壞檔留給前端顯示缺失，不在這裡中斷 */ }
+  }
+  if (n) console.log(`  已脫敏 ${n} 個同步分片的本機路徑`);
+}
+
 function main() {
   if (!fs.existsSync(path.join(ROOT, 'index.html'))) {
     throw new Error('找不到 index.html，請在倉庫根目錄執行');
@@ -110,14 +137,38 @@ function main() {
   copyDir(path.join(ROOT, 'css'), path.join(SITE, 'css'));
   copyDir(path.join(ROOT, 'js'), path.join(SITE, 'js'));
 
-  // ---------- 3. 空快照 ----------
-  const snapshot = buildSnapshot();
-  fs.mkdirSync(path.join(SITE, 'api'), { recursive: true });
-  fs.writeFileSync(
-    path.join(SITE, 'api', 'snapshot.json'),
-    JSON.stringify(snapshot, null, 2) + '\n',
-    'utf8'
-  );
+  // ---------- 3. 数据快照 ----------
+  const apiDir = path.join(SITE, 'api');
+  fs.mkdirSync(apiDir, { recursive: true });
+
+  let snapshot;
+  if (DATA) {
+    const src = path.join(DATA, 'snapshot.json');
+    if (!fs.existsSync(src)) {
+      throw new Error(`找不到資料快照：${path.relative(ROOT, src)}（請先執行 node tools/export-snapshot.js）`);
+    }
+    snapshot = JSON.parse(fs.readFileSync(src, 'utf8'));
+    if (snapshot.empty !== false) {
+      throw new Error('快照標記為 empty，--data 應指向 tools/export-snapshot.js 產生的真實快照');
+    }
+    // 分片目錄（text / atomic / amend）整批複製；缺一個就等於線上大半頁面取不到內容
+    for (const sub of ['text', 'atomic', 'amend']) {
+      const from = path.join(DATA, sub);
+      if (!fs.existsSync(from)) throw new Error(`快照缺少 ${sub}/ 目錄`);
+      fs.cpSync(from, path.join(apiDir, sub), { recursive: true });
+    }
+    // 脫敏：amend/*.json 帶著本機文書庫的絕對路徑（server.js 的 doc_dir），
+    // 公開站不該暴露開發機的目錄結構。逐檔改寫，只動這一個欄位。
+    stripLocalPaths(path.join(apiDir, 'amend'));
+    fs.writeFileSync(path.join(apiDir, 'snapshot.json'), JSON.stringify(snapshot), 'utf8');
+  } else {
+    snapshot = buildSnapshot();
+    fs.writeFileSync(
+      path.join(apiDir, 'snapshot.json'),
+      JSON.stringify(snapshot, null, 2) + '\n',
+      'utf8'
+    );
+  }
 
   // ---------- 4. 防 Jekyll ----------
   fs.writeFileSync(path.join(SITE, '.nojekyll'), '', 'utf8');
@@ -126,11 +177,34 @@ function main() {
   if (!fs.existsSync(path.join(SITE, 'js', 'static-api.js'))) {
     throw new Error('site/js/static-api.js 缺失，前端會取不到任何資料');
   }
+  if (!fs.existsSync(path.join(apiDir, 'snapshot.json'))) {
+    throw new Error('site/api/snapshot.json 缺失');
+  }
+  if (DATA) {
+    // 快照索引引用的分片必須真的存在，否則線上才會 404（建置時就該擋下）
+    const missing = [];
+    for (const ref of Object.values(snapshot.text || {})) {
+      if (!fs.existsSync(path.join(apiDir, ref))) missing.push(ref);
+      if (missing.length > 5) break;
+    }
+    for (const ref of Object.values(snapshot.atomicIndex || {})) {
+      if (!fs.existsSync(path.join(apiDir, ref))) missing.push(ref);
+      if (missing.length > 5) break;
+    }
+    if (missing.length) throw new Error('快照索引指向不存在的分片：' + missing.join('、'));
+  }
+
   const rel = path.relative(ROOT, SITE) || '.';
   console.log(`✓ 已生成 ${rel}/`);
   console.log(`  頁面 ${injected} 個（已注入 static-api.js）`);
-  console.log(`  快照 api/snapshot.json（empty: ${snapshot.empty}）`);
-  console.log(`  部署後網址形如 https://<owner>.github.io/<repo>/`);
+  if (DATA) {
+    const c = snapshot.counts || {};
+    console.log(`  資料快照：法規 ${c.laws || 0} 部｜台灣法規 ${c.twLaws || 0} 部｜草案 ${c.drafts || 0} 份｜歷程 ${c.archive || 0} 條`);
+    console.log(`  正文分片 ${Object.keys(snapshot.text || {}).length} 項｜原子層 ${Object.keys(snapshot.atomicIndex || {}).length} 部`);
+  } else {
+    console.log(`  快照 api/snapshot.json（empty: ${snapshot.empty}）`);
+  }
+  console.log(`  輸出目錄即部署根目錄：${rel}/`);
 }
 
 try {

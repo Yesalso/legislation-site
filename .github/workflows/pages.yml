@@ -30,8 +30,9 @@ jobs:
           node-version: '20'
 
       # 导出脚本零依赖（只用 fs/path），不需要 npm install
+      # --data=static-data：用仓库内的真实数据快照建站（不带该参数则产出空壳）
       - name: 生成静态站点
-        run: node tools/export-static.js
+        run: node tools/export-static.js --data=static-data
 
       # Jekyll 会忽略 _ 开头的文件，并把 JS 里的 {{ }} 当 Liquid 解析
       - name: 关闭 Jekyll

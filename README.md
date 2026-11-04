@@ -1,78 +1,82 @@
-# 「九」法規查詢系統 —— 前端（公開版）
+# 「九」法規查詢系統 —— 靜態站（真實資料）
 
-> 純 HTML / CSS / JavaScript，**無框架、無建置步驟、零依賴**。
-> 線上展示：`https://<owner>.github.io/<repo>/`
+> 純 HTML / CSS / JavaScript，**無框架、無建置依賴**。
+> 線上：`https://yesalso.github.io/legislation-site/`
 
-這是法規查詢系統的**界面層**：12 個頁面、樣式與前端邏輯。
+本站是法規查詢系統的**唯讀快照版**：法規目錄、條文正文、歷史版本、
+命令與草案、台灣法規、立法歷程全部可瀏覽，資料由本機的 Node 服務離線導出後固化進倉庫。
 
-## 為什麼是「界面展示版」
+- 資料規模：法規 **220** 部｜台灣法規 **173** 部｜命令與草案 **654** 份｜歷程 **431** 條
+- 正文分片 **1351** 項｜原子層（逐版快照）**55** 部
+- 唯讀：修正同步、點擊計數等寫操作在線上不可用（會回傳明確提示），請在本機版操作
 
-原始系統是 Node.js 後端 + 純前端：`server.js` 提供 18 個 `/api/*` 端點，
-資料來自三處機器派生目錄（命令文書 → 法規正文/版本 → 事件流）。
-那些資料屬於私有內容，**不在此倉庫內**，後端引擎亦未包含。
+## 為什麼是「快照」而不是「服務」
 
-因此線上站台只承載界面：目錄、搜尋結果、條文與版本內容為空屬**預期行為**，
-頁面頂部會顯示提示條。`js/static-api.js` 的作用就是讓 `/api/*` 取數
-落到空快照而**不是 404**，避免整站報錯。
+原始系統是 Node 後端（`server.js`，18 個 `/api/*` 端點）＋ 前端。
+資料來自三處機器派生目錄，都在開發機的硬盤上，雲端構建時並不存在。
+所以資料必須**先在本地固化**，再由靜態站讀取——`js/static-api.js` 在瀏覽器端
+接管 `/api/*`，把請求解析成快照檔案，因此 12 個頁面、8 個 JS 檔一行都不用改。
+
+```
+本機：File 文書庫 → derive → derived/ → LawCurrent/ + atomic/
+                 └─ tools/export-snapshot.js → static-data/
+本倉庫：static-data/ + 頁面 + css/js ──Actions──> GitHub Pages
+```
 
 ## 目錄
 
 | 路徑 | 說明 |
 |---|---|
-| `index.html` | 法規目錄（首頁） |
-| `detail.html?lawId=` | 法規詳情：目錄、沿革時間軸 |
-| `archive.html` | 立法歷程 |
-| `drafts.html` / `orders.html` / `meetings.html` / `regulations.html` | 各板塊清單 |
-| `tw.html` | 台灣法規 |
-| `draft_detail.html` / `order_detail.html` / `amendment.html` | 文書全文與條文對比 |
-| `css/` | `style.css`（版式）、`theme.css`（主題變量與深色模式） |
-| `js/` | `app.js`（詳情頁）、`search.js`、`archive.js`、`section.js`、`home-widgets.js` 等 |
-| `js/static-api.js` | **靜態站取數適配層**，只在導出產物中載入 |
-| `tools/export-static.js` | 生成可部署的 `site/` |
+| `static-data/` | **真實資料快照**：`snapshot.json` 索引 + `text/` 正文分片 + `atomic/` 逐版快照 + `amend/` 同步狀態 |
+| `js/static-api.js` | 取數適配層：把 `/api/*` 映射到 `api/` 下的快照分片 |
+| `tools/export-static.js` | 把頁面 + `static-data/` 拼成可部署的 `site/` |
+| `css/`、`js/` | 前端樣式與邏輯 |
+| `*.html` | 11 個頁面（目錄、詳情、歷程、草案、命令、會議、重要規定、台灣法規、文書全文、條文比較） |
 
-## 建置與預覽
+## 建置與本機預覽
 
 ```bash
-npm run export            # 產出 site/
-cd site && python -m http.server 3900   # 打開 http://127.0.0.1:3900/
+npm run export                            # 產出 site/（約 21 MB）
+cd site && python -m http.server 3900     # http://127.0.0.1:3900/
 ```
 
-`export-static.js` 會：
+`export-static.js` 做的事：
 
-1. 複製 11 個頁面（不含開發用頁面），並在 `<head>` 後注入 `js/static-api.js`；
+1. 複製 11 個頁面，並在 `<head>` 後注入 `js/static-api.js`；
 2. 複製 `css/`、`js/`；
-3. 寫出結構合法但為空的 `api/snapshot.json`；
+3. 複製 `static-data/` 的分片到 `api/`，並**清空 `amend/*.json` 裡的 `doc_dir`**（本機絕對路徑不上公網）；
 4. 寫 `.nojekyll`（避免 Jekyll 忽略下劃線檔案、誤解析 JS 裡的 `{{ }}`）。
+
+## 更新資料
+
+資料變動後，在**私有倉庫**（本機完整版）重新導出，再把快照搬過來：
+
+```bash
+# 私有倉庫內
+node tools/export-snapshot.js           # → static-data/
+cp -r static-data/. <本倉庫>/static-data/
+git add static-data && git commit -m "data: 更新法規快照" && git push
+```
+
+推送後 Actions 自動重建並發布，約 1–2 分鐘生效。
 
 ## 部署
 
-推送到 `main` 後由 `.github/workflows/pages.yml` 自動建置並發佈。
+推送到 `main` 由 `.github/workflows/pages.yml` 自動建置。
 
-> 首次使用前必須在 **Settings → Pages → Source** 選擇 **GitHub Actions**，
-> 否則 `configure-pages` 會以 `Get Pages site failed` 失敗。
+> 首次使用前須在 **Settings → Pages → Source** 選擇 **GitHub Actions**。
+> 這步無法由工作流代勞：預設 `GITHUB_TOKEN` 沒有建立 Pages 站點的權限，
+> 帶 `enablement: true` 會以 `Resource not accessible by integration` 失敗。
 
-## 幾個實作上的注意點
+若某次部署卡在 `deploy` 超過 10 分鐘（`Timeout reached, aborting!`），
+到 Actions 頁 **Cancel workflow** 後重跑即可，不必改設定。
 
-- **所有資源引用都是相對路徑**（`css/style.css` 而非 `/css/style.css`），
-  因為 Pages 站點位於 `/<repo>/` 子路徑下。
-- **`/api/*` 是絕對路徑**，這是刻意保留的：本機由 Node 後端服務，
-  線上由 `static-api.js` 在 `fetch` 層攔截，因此 12 個頁面、8 個 JS 檔
-  一行都不用改。
-- 法規日期採**熙明曆**：西元 = 熙明年 + 2013。
-- 法規正文用細明體；標題用無襯線粗體。
+## 已知限制
 
-## 首次部署必須做的一步
-
-到 **Settings → Pages → Build and deployment → Source**，把下拉選單改成 **GitHub Actions**。
-
-這一步無法由工作流代勞：預設的 `GITHUB_TOKEN` 沒有建立 Pages 站點的權限，
-`configure-pages` 若帶 `enablement: true` 會以
-`Resource not accessible by integration` 失敗。改完設定後，
-到 **Actions → Deploy to GitHub Pages → Re-run all jobs**（或再 push 一次即可）。
-
-成功後網址為 `https://<owner>.github.io/<repo>/`，也可在 Settings → Pages 頂部看到
-`Your site is live at …`。
+- **唯讀**：`POST /api/amend`（修正同步）、`POST /api/click`（熱度計數）在線上只回提示。
+- **不提供版本差異**：`/api/atomic/laws/<id>/diff` 需要服務端計算，靜態站回「不提供」。
+- **資料非即時**：站點內容等於 `static-data/` 最後一次提交的狀態，不隨本機改動自動更新。
 
 ## 授權
 
-僅覆蓋本倉庫內的程式碼。
+僅覆蓋本倉庫內的程式碼與頁面；法規文本的權利狀態另計。

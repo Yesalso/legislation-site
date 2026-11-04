@@ -1,0 +1,13 @@
+# 652
+###### 主任委員令 第 328 號
+熙字第01300082590號令
+［1］依據立法議事條例第四百三十二條第三項之規定，決定熙明十三年五月二十四日修正之立法議事條例第四百零二條條文，自依本令第二款規定執行並自熙明十三年五月二十四日起施行。
+［2］立法議事條例第四百零二條之命名方式如下：
+ 1. 輸入變量定義 所有運算均基於以下三組輸入數值： - $A$: 文件編號 ($500 \leq A \leq 999$) - $C$: 命令編號 ($300 \leq C \leq 599,\ C < A$) - $B$: 日期（月日格式） - $M = \lfloor B/100 \rfloor$ （月份） - $D = B \mod 100$ （公布日期）
+ 2. 月份基礎數值 $\text{Base}(M)$ $$ \text{Base}(M) = \begin{cases} 700 & M = 1 \\ 2700 & M = 2 \\ 4200 & M = 3 \\ 5500 & M = 4 \\ 6800 & M = 5 \\ 8100 & M = 6 \\ 9400 & M = 7 \\ 10700 & M = 8 \\ 11900 & M = 9 \\ 12900 & M = 10 \\ 13700 & M = 11 \\ 14300 & M = 12 \end{cases} $$3. 月份係數 $K(M)$ $$ K(M) = \begin{cases} 56 & M = 1 \\ 37 & M = 2 \\ 44 & 3 \leq M \leq 7 \\ 41 & M = 8 \\ 34 & M = 9 \\ 26 & M = 10 \\ 19 & M = 11 \\ 12 & M = 12 \end{cases} $$4. 日期高隨機函數 $F(D,M)$ $$ \begin{aligned} F = \Bigg\lfloor & K \cdot D^{1.03} + 14\left(1 - e^{-D/8.5}\right) - 25 \\ & + 5\sin\left(\frac{D}{5.5}\right) + 4\cos\left(\frac{D}{7.2}\right) + 3\sin\left(\frac{D}{3.8}\right) \\ & + 2.5\cos\left(\frac{M \cdot D}{120}\right) + 2.5\sin\left(\frac{D^2}{200}\right) \Bigg\rfloor \end{aligned} $$5. 文件編號高隨機函數 $G(A,M)$ $$ \begin{aligned} G = \Bigg\lfloor & 0.45 \cdot A^{0.92} + 5\ln\left(\frac{A}{430}\right) - 180 \\ & + 3.5\cos\left(\frac{A}{42}\right) + 3\sin\left(\frac{A}{28}\right) + 2.5\cos\left(\frac{A}{65}\right) \\ & + 2\sin\left(\frac{A \cdot M}{350}\right) \Bigg\rfloor \end{aligned} $$6. 核心最終公式（原始數值） $$ X = \text{Base}(M) + F(D,M) + G(A,M) + C $$ 約束條件： $$ 1000 \leq X \leq 15000 $$7. 格式化輸出公式 $Y$ $$ Y = \begin{cases} \lceil 013000 \rfloor + X + \lceil 0 \rfloor & \text{若 } X \text{ 為四位數值} \\ \lceil 01300 \rfloor + X + \lceil 0 \rfloor & \text{若 } X \text{ 為五位數值} \end{cases} $$
+［3］本命令公布前之命令編號主任委員得按前款規定重新修改其編號
+
+熙明十三年五月二十四日下午七時四十三分公布
+# 653
+#草案
+## 修正高熱量食品購買處理辦法

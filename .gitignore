@@ -1,12 +1,8 @@
 node_modules/
 site/
 
-# 真實資料快照（由私有倉庫的 tools/export-snapshot.js 產出）。
-# 本倉庫只承載界面，永不接收這些檔案；萬一被複製過來，git 會直接忽略。
-static-data/
-api/text/
-api/amend/
-api/atomic/
+# 說明：static-data/ 是「真實資料快照」，本倉庫需要它才能建出帶內容的站點，
+# 因此不再忽略。它由私有倉庫的 tools/export-snapshot.js 產出後複製進來。
 
 *.log
 .DS_Store
