@@ -1,0 +1,375 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "GenSekiGothic TW", "MingLiu", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+  line-height: 1.8;
+  color: #333;
+  background: #f8f9fa;
+  margin: 0;
+  padding: 0;
+}
+
+/* 按钮/输入框等控件继承全局字体：未明确指定字体的控件文字也用 GenSekiGothic TW / MingLiu */
+button, input, select, textarea {
+  font-family: inherit;
+}
+
+h1, h2, h3, h4 { font-weight: bold; color: #222; margin: 1.5rem 0 0.8rem; }
+
+header {
+  background: #2c3e50;
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
+}
+.logo { font-size: 1.4rem; font-weight: bold; }
+
+.top-nav {
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  padding: 0 1rem;
+  text-align: center;
+}
+.top-nav-list {
+  display: inline-flex;
+  list-style: none;
+  gap: 0.5rem;
+  padding: 0.8rem 0;
+  justify-content: center;
+}
+.top-nav-item {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+}
+.top-nav-item a { color: inherit; text-decoration: none; }
+.top-nav-item.active { background: #3498db; color: #fff; }
+.top-nav-item:hover:not(.active) { background: #f0f0f0; }
+
+.search-box { max-width: 600px; margin: 1rem auto; padding: 0 1rem; }
+.search-input { width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; }
+
+.main-layout {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 1.5rem;
+  padding: 0 1rem 2rem;
+}
+
+.left-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: #fff;
+  border-radius: 6px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  height: fit-content;
+}
+.sidebar-title {
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+  color: #2c3e50;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+}
+.sidebar-category-list { list-style: none; }
+.sidebar-category-item {
+  padding: 0.6rem 0.4rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 0.4rem;
+}
+.sidebar-category-item.active { background: #e3f2fd; color: #3498db; font-weight: bold; }
+.sidebar-category-item:hover:not(.active) { background: #f5f5f5; }
+
+.right-content { flex: 1; }
+
+.category-card {
+  background: #fff;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.category-title {
+  font-size: 1.2rem;
+  margin-bottom: 0.8rem;
+  color: #2c3e50;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+}
+
+.law-item {
+  background: #fafafa;
+  padding: 0.8rem;
+  margin-bottom: 0.8rem;
+  border-radius: 4px;
+  border-left: 3px solid #3498db;
+}
+.law-title { font-weight: bold; margin-bottom: 0.3rem; }
+.law-version { font-size: 0.9rem; color: #666; margin-bottom: 0.5rem; }
+.law-link { color: #3498db; text-decoration: none; font-size: 0.9rem; }
+.law-link:hover { text-decoration: underline; }
+
+.empty-state, .error-state {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  display: none;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.error-state { color: #e74c3c; }
+
+.breadcrumb-header {
+  background: #f0f0f0;
+  padding: 20px 0;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 20px;
+}
+.breadcrumb-container { width: 80%; max-width: 1000px; margin: 0 auto; padding: 0; }
+.breadcrumb { font-size: 14px; color: #666; margin-bottom: 10px; }
+.breadcrumb a { color: #0066cc; text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb span { color: #999; margin: 0 5px; }
+.law-title-top { font-size: 32px; font-weight: bold; margin-bottom: 8px; color: #222; }
+.law-alias, .order-alias { font-size: 14px; color: #666; margin-bottom: 15px; }
+
+.tabs-container { display: flex; gap: 0; margin-top: 15px; }
+.tab-item {
+  padding: 8px 18px;
+  background: #fff;
+  border: 1px solid #0066cc;
+  border-right: none;
+  font-size: 15px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+  position: relative;
+  z-index: 10;
+}
+.tab-item.active { background: #0066cc; color: #fff; font-weight: bold; }
+.tab-item:last-child { border-right: 1px solid #0066cc; border-radius: 0 5px 5px 0; }
+.tab-item:first-child { border-radius: 5px 0 0 5px; }
+.tab-item:hover:not(.active) { background: #e6f0ff; }
+
+#app { width: 80%; max-width: 1000px; margin: 0 auto; padding: 0; }
+#law-title, #order-title { display: none; }
+
+.version-select { margin-bottom: 2px; padding: 0.5rem 1rem; font-size: 1rem; border: 1px solid #ddd; border-radius: 4px; }
+
+.law-part { font-size: 1.4em; font-weight: bold; color: blue; text-align: left; margin: 2.5rem 0 1.5rem; border-bottom: 1px solid #ccc; }
+.law-chapter { font-size: 1.4em; font-weight: bold; color: blue; }
+.law-section { font-size: 1.4em; font-weight: bold; color: blue; padding-left: 1rem; }
+.law-subsection { font-size: 1.2em; font-weight: bold; color: #444; margin: 1.2rem 0 0.6rem; padding-left: 2rem; }
+
+.law-article-block {
+  background: #f5f5f5;
+  padding: 5px 8px;
+  margin: 6px 0;
+  border-radius: 3px;
+}
+.law-paragraph { font-weight: normal; color: #333; margin: 0.6rem 0; padding-left: 1rem; }
+.law-normal-block { padding: 0; font-size: 16px; margin: 8px 0; line-height: 1.3; background: transparent; }
+.law-empty-line { margin: 0.3rem 0; }
+
+.law-block { padding: 8px 12px; margin: 4px 0; border-radius: 2px; }
+.law-part { background: #e8f4f8; }
+.law-chapter { background: #f0f8fb; }
+.law-section { background: #f5fafe; }
+.law-subsection { background: #f8fbfd; }
+.law-paragraph { background: #fafcfd; }
+
+.legislation-note {
+  margin: 12px 0;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.legislation-note .note-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+.legislation-note .version-selector {
+  border: none;
+  background: transparent;
+  font-weight: bold;
+  color: #2563eb;
+  font-size: 1rem;
+  padding: 4px;
+  cursor: pointer;
+  outline: none;
+}
+.legislation-note .note-toggle {
+  padding: 6px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.legislation-note .note-content { padding: 8px; line-height: 1.5; color: #111827; }
+.legislation-note .note-content p { margin: 0; }
+.legislation-note .note-content p:last-child { margin-bottom: 0; }
+
+.main-container { display: flex; gap: 2rem; margin-top: 2rem; }
+.version-sidebar {
+  width: 280px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  max-height: 700px;
+  overflow-y: auto;
+  user-select: none;
+}
+.version-item {
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+.version-item.active { border-left: 3px solid #0066cc; background: #e8f0ff; font-weight: bold; }
+.version-item:hover { background: #f0f0f0; }
+.compare-area { flex: 1; background: #fff; border: 1px solid #e0e0e0; border-radius: 4px; padding: 1.5rem; }
+.compare-note { background: #f8f8f8; padding: 0.8rem 1rem; margin-bottom: 1rem; border-left: 3px solid #28a745; }
+.green { color: #28a745; font-weight: bold; }
+.red { color: #dc3545; font-weight: bold; }
+
+.compare-table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; }
+.compare-table th, .compare-table td { border: 1px solid #e0e0e0; padding: 1rem; vertical-align: top; }
+.compare-table th { background: #f8f8f8; font-weight: bold; text-align: left; width: 48%; }
+.article-cell { padding: 10px; border: 1px solid #eee; vertical-align: top; line-height: 1.8; font-size: 17px; width: 50%; text-align: left; }
+.article-cell span[style*="background-color"] { padding: 2px 0; border-radius: 2px; display: block; }
+.article-cell span[style*="text-indent"] { display: inline-block; width: 100%; }
+strong { font-weight: 800; font-size: 19px; }
+
+.filter-btn-container { margin-bottom: 1rem; text-align: right; }
+.filter-btn {
+  padding: 6px 12px;
+  background: #0066cc;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.filter-btn:hover { opacity: 0.9; }
+.filter-btn:disabled { background: #d5d8dd; color: #7c828c; cursor: not-allowed; opacity: 1; }
+
+#amend-btn-holder { margin: 2px 0 10px; }
+.amend-btn {
+  padding: 8px 16px;
+  background: #2f9e44;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 15px;
+}
+.amend-btn:hover { opacity: 0.9; }
+.amend-btn:disabled { opacity: 0.6; cursor: default; }
+
+/* 草案詳情頁：命令文書 → 相應法規修正同步頁的入口連結 */
+#draft-sync-link { margin: 12px 0 0; }
+#draft-sync-link .amend-btn { display: inline-block; text-decoration: none; }
+
+.loading-state, .empty-msg { text-align: center; padding: 2rem; color: #666; }
+.error-msg { text-align: center; padding: 2rem; color: #dc3545; }
+
+.law-history-block {
+  margin: 12px 0;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+}
+/* 立法沿革／經歷過程：全國法規資料庫樣式——中文 MingLiU、數字另用藍色 Times */
+.law-history-block,
+.law-history-content,
+.law-history-entry,
+.law-history-detail {
+  font-family: "MingLiU", "PMingLiU", "細明體", "新細明體", serif;
+}
+.lh-num {
+  font-family: "Times New Roman", "Liberation Serif", serif;
+  font-weight: 400;        /* 數字不加粗：以字重正常呈現 */
+  font-size: 1.1em;        /* 改用「大一碼」的字號取得辨識度，而非加粗 */
+  line-height: inherit;
+  color: #0066cc;
+  padding: 0 1px;
+}
+.law-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #f0f4ff;
+  border-bottom: 1px solid #e5e7eb;
+  cursor: pointer;
+}
+.law-history-title {
+  font-weight: bold;
+  color: #2563eb;
+  font-size: 14px;
+}
+.law-history-content {
+  padding: 8px 12px;
+  line-height: 1.8;
+  font-size: 12pt;
+}
+.law-history-entry {
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed #eee;
+}
+.law-history-entry:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+.law-history-detail {
+  padding-left: 2em;
+  color: #555;
+  font-size: 11pt;
+}
+.md-wiki-link {
+  color: #2563eb;
+  text-decoration: none;
+  border-bottom: 1px dotted #2563eb;
+}
+.md-wiki-link:hover {
+  text-decoration: underline;
+}
+.md-tag {
+  color: #7c3aed;
+  background: #f3f0ff;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+@media (max-width: 768px) {
+  .main-layout { flex-direction: column; gap: 1rem; }
+  .left-sidebar { width: 100%; }
+  .category-card { padding: 0.8rem; }
+  .law-item { padding: 0.6rem; }
+}
+@media (max-width: 992px) {
+  .main-container { flex-wrap: wrap; }
+  .version-sidebar { width: 100%; max-height: 300px; }
+  .compare-table th, .compare-table td { padding: 0.5rem; }
+}

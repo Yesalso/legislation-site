@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>法規查詢系統 - 重要規定</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <script src="js/theme.js"></script>
+</head>
+<body>
+
+  <div class="fw-nav-wrap onload-animation">
+    <nav class="fw-navbar fw-card">
+      <a href="index.html" class="fw-site-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg>
+        法規查詢系統
+      </a>
+
+      <div class="fw-nav-links">
+        <a href="index.html">法規目錄</a>
+        <a href="tw.html">台灣法規目錄</a>
+        <a href="orders.html">相關命令</a>
+        <a href="meetings.html">相關會議</a>
+        <a href="regulations.html">重要規定</a>
+        <a href="drafts.html">草案審查</a>
+        <a href="archive.html">立法歷程</a>
+      </div>
+
+
+
+      <div class="fw-nav-actions">
+        <div class="fw-search-bar" id="fw-search-bar" role="search">
+          <svg class="fw-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="fw-search-input" class="fw-search-input" placeholder="搜尋法規…" autocomplete="off" spellcheck="false" aria-label="搜尋">
+          <div id="fw-search-dropdown" class="search-dropdown" hidden>
+            <div class="fw-search-status" id="fw-search-status"></div>
+            <div class="fw-search-results" id="fw-search-results"></div>
+          </div>
+        </div>
+        <button id="nav-menu-switch" class="fw-icon-btn fw-menu-btn" aria-label="選單">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+        </button>
+      </div>
+
+
+
+      <div id="nav-menu-panel" class="float-panel float-panel-closed fw-mobile-menu">
+        <a href="index.html">法規目錄</a>
+        <a href="tw.html">台灣法規目錄</a>
+        <a href="orders.html">相關命令</a>
+        <a href="meetings.html">相關會議</a>
+        <a href="regulations.html">重要規定</a>
+        <a href="drafts.html">草案審查</a>
+        <a href="archive.html">立法歷程</a>
+      </div>
+
+    </nav>
+  </div>
+
+  <div class="fw-layout">
+    <aside class="fw-sidebar onload-animation">
+      <div class="fw-card fw-profile">
+        <div class="fw-avatar">規</div>
+        <div class="fw-name">重要規定</div>
+        <div class="fw-divider"></div>
+        <div class="fw-bio">瀏覽重要規定與臨時處分，點擊卡片查看全文</div>
+        <div class="fw-stats">
+          <div>
+            <div class="fw-stat-num" id="stat-categories">-</div>
+            <div class="fw-stat-label">分類</div>
+          </div>
+          <div>
+            <div class="fw-stat-num" id="stat-laws">-</div>
+            <div class="fw-stat-label">數量</div>
+          </div>
+          <div>
+            <div class="fw-stat-num" id="stat-tags">-</div>
+            <div class="fw-stat-label">標籤</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fw-card fw-widget">
+        <div class="fw-widget-title">分類</div>
+        <div class="fw-cats" id="fw-cats"></div>
+      </div>
+
+      <div class="fw-card fw-widget">
+        <div class="fw-widget-title">標籤</div>
+        <div class="fw-cats" id="fw-tags"></div>
+      </div>
+    </aside>
+
+    <main class="fw-main onload-animation">
+      <div id="fw-post-list"></div>
+      <div class="fw-empty" id="empty-state" style="display:none"><p>暫無資料</p></div>
+      <div class="fw-empty" id="error-state" style="display:none"><p>數據載入失敗，請確認伺服器已啟動</p></div>
+      <div id="fw-pagination" class="fw-pagination-wrap"></div>
+    </main>
+  </div>
+
+  <script src="js/features.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/pagination.js"></script>
+  <script>window.SECTION_KEY = 'regulations';</script>
+  <script src="js/section.js"></script>
+</body>
+</html>
+

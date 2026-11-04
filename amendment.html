@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>法規異動條文對比</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <script src="js/theme.js"></script>
+</head>
+<body>
+  <div class="breadcrumb-header">
+    <div class="breadcrumb-container">
+      <div class="breadcrumb">
+        <a href="index.html">首頁</a>
+        <span>/</span>
+        <span id="law-name-breadcrumb"></span>
+        <span>/</span>
+        <span id="version-type">三讀版本</span>
+        <span>/</span>
+        <span id="amend-date"></span>
+      </div>
+      <h1 class="law-title-top" id="law-title-top"></h1>
+      <div class="law-alias">簡介：<span id="law-alias"></span></div>
+      <div class="tabs-container">
+        <div onclick="gotoDetail()" class="tab-item">瀏覽法律</div>
+        <div class="tab-item active">異動條文</div>
+        <div class="tab-item">經歷過程</div>
+        <div class="tab-item">子法列表</div>
+        <div class="tab-item">條文比較工具</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="app" style="width:90%;max-width:1200px">
+    <div class="main-container">
+      <div class="version-sidebar" id="version-sidebar">
+        <div class="loading-state">加載版本列表中...</div>
+      </div>
+      <div class="compare-area">
+        <div class="compare-note">
+          <span class="green">綠色為新增</span> / <span class="red">紅色為刪除</span>
+        </div>
+        <div class="filter-btn-container">
+          <button id="toggleModifiedOnly" class="filter-btn">僅展示修正條文</button>
+        </div>
+        <div id="compare-content">
+          <div class="loading-state">請選擇要對比的版本</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/compareLaw.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(location.search);
+    const lawId = urlParams.get('lawId');
+
+    function gotoDetail() {
+      if (!lawId) { alert('無法獲取法規ID'); return; }
+      window.location.href = `detail.html?lawId=${lawId}`;
+    }
+
+    function renderInfo(version) {
+      const law = window.lawData?.laws.categories.flatMap(c => c.laws).find(l => l.id === lawId);
+      if (!law) return;
+      document.getElementById('law-name-breadcrumb').textContent = law.title;
+      document.getElementById('law-title-top').textContent = law.title;
+      document.getElementById('law-alias').textContent = law.alias || '無';
+      const ver = law.versions.find(v => v.version === version);
+      if (ver) {
+        const [y, m, d] = ver.date.split('-');
+        document.getElementById('amend-date').textContent = `${y} 年 ${m} 月 ${d} 日 修正`;
+      }
+    }
+
+    function renderSidebar() {
+      const el = document.getElementById('version-sidebar');
+      const versions = window.LawCompare.getAllVersions();
+      if (versions.length === 0) { el.innerHTML = '<div class="empty-msg">無版本數據</div>'; return; }
+      const active = window.LawCompare.getSelectedTargetVersion();
+      el.innerHTML = versions.slice().reverse().map(v =>
+        `<div class="version-item${v.version === active ? ' active' : ''}" onclick="switchVersion('${v.version}')">${v.displayDate}</div>`
+      ).join('');
+    }
+
+    async function switchVersion(version) {
+      document.querySelectorAll('.version-item').forEach(el => el.classList.remove('active'));
+      window.LawCompare.switchVersion(version);
+      document.querySelectorAll('.version-item').forEach(el => {
+        if (el.getAttribute('onclick')?.includes(`'${version}'`)) el.classList.add('active');
+      });
+      renderInfo(version);
+      const content = document.getElementById('compare-content');
+      content.innerHTML = '<div class="loading-state">加載中...</div>';
+      await window.LawCompare.renderCompareContent(content);
+    }
+
+    window.onload = async () => {
+      try {
+        if (!lawId) throw new Error('缺少法規ID');
+        await window.LawCompare.init(lawId);
+        const initial = window.LawCompare.getSelectedTargetVersion() || 'v1';
+        renderInfo(initial);
+        renderSidebar();
+        await window.LawCompare.renderCompareContent(document.getElementById('compare-content'));
+        document.getElementById('toggleModifiedOnly').addEventListener('click', () => {
+          window.LawCompare.toggleShowModifiedOnly();
+        });
+      } catch (e) {
+        document.getElementById('version-sidebar').innerHTML = `<div class="error-msg">${e.message}</div>`;
+        document.getElementById('compare-content').innerHTML = `<div class="error-msg">${e.message}</div>`;
+      }
+    };
+  </script>
+</body>
+</html>

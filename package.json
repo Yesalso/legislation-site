@@ -1,0 +1,9 @@
+{
+  "name": "law-system-ui",
+  "version": "1.0.0",
+  "private": true,
+  "description": "法規查詢系統前端（公開版）：純 HTML/CSS/JS，無框架、無建置步驟",
+  "scripts": {
+    "export": "node tools/export-static.js"
+  }
+}

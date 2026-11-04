@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>法規查詢系統 - 草案內容</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <script src="js/theme.js"></script>
+</head>
+<body data-page-type="draft-detail">
+
+  <div class="breadcrumb-header onload-animation">
+    <div class="breadcrumb-container">
+      <div class="breadcrumb">
+        <button class="filter-btn btn-back" type="button" onclick="goBack()" aria-label="返回上一頁">← 返回</button>
+        <a href="index.html">首頁</a>
+        <span>/</span>
+        <a href="drafts.html">草案審查</a>
+        <span>/</span>
+        <span id="draft-name-breadcrumb"></span>
+      </div>
+      <h1 class="law-title-top" id="draft-title-top"></h1>
+      <div class="draft-detail-meta" id="draft-detail-meta"></div>
+      <div id="draft-sync-link" class="draft-sync-link"></div>
+    </div>
+  </div>
+
+  <div id="app" class="onload-animation">
+    <div class="detail-layout">
+      <div class="detail-content">
+        <div id="draft-content"><div class="loading-state">加載中...</div></div>
+      </div>
+      <nav class="toc-sidebar" aria-label="目錄"></nav>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/features.js"></script>
+  <script src="js/draft-detail.js"></script>
+</body>
+</html>

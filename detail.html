@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>法規詳情</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* 法规详情页：字体整体为原本的 80%（20px→16px）——html 120%×0.8=96%，rem 类字号随之缩为 80% */
+    html { font-size: 96%; }
+    /* 正文 / 标题（app.js 内联 pt 字号 × 0.8） */
+    .md-paragraph { font-size: 11.52pt !important; }
+    .md-heading.md-h1 { font-size: 17.28pt !important; }
+    .md-heading.md-h2 { font-size: 14.4pt !important; }
+    .md-heading.md-h3, .md-heading.md-h4, .md-heading.md-h5 { font-size: 12.96pt !important; }
+    .md-heading.md-h6 { font-size: 11.52pt !important; }
+    /* 主要 px 字号（× 0.8） */
+    .law-title-top { font-size: 30.4px; }
+    .tab-item { font-size: 14.4px; }
+    .breadcrumb { font-size: 13.6px; }
+    .law-alias, .order-alias { font-size: 13.6px; }
+    /* 补偿 style.css 中该页用到的 px/pt 固定字号（× 0.8） */
+    .law-normal-block { font-size: 12.8px; }
+    .article-cell { font-size: 13.6px; }
+    strong { font-size: 15.2px; }
+    .law-history-content { font-size: 9.6pt; }
+    .law-history-detail { font-size: 8.8pt; }
+    .law-history-title { font-size: 11.2px; }
+    .law-history-header .note-toggle { font-size: 9.6px; }
+    .preamble-status { font-size: 12.8px; }
+    .filter-btn { font-size: 11.2px; }
+    .amend-btn { font-size: 12px; }
+    /* 法规详情页：内容区域横向扩大 */
+    .breadcrumb-container, #app {
+      width: 94%;
+      max-width: 1440px;
+    }
+    /* 法规详情页：底部留白 */
+    #app { padding-bottom: 6rem; }
+    /* 面包屑栏：宽度比正文区域（#app 容器，含主内容+右侧目录栏）略微宽 */
+    .breadcrumb-header {
+      width: 96% !important;
+      max-width: 1230px !important;
+      margin: 0 auto !important;
+      padding: 12px 0 !important;
+      margin-bottom: 12px !important;
+    }
+    .breadcrumb-container {
+      width: 100% !important;
+      max-width: none;
+    }
+    /* ---- 修正同步分頁 ---- */
+    .amend-sync-hint { font-size: 11.2px; color: #5b6478; margin: 0 0 1.2rem; line-height: 1.7; }
+    .amend-sync-hint code { background: #f3f5f8; padding: 1px 5px; border-radius: 3px; }
+    /* 狀態列：狀態資訊在左、動作按鈕在右 */
+    .amend-status-bar { display: flex; flex-wrap: wrap; gap: .75rem 1.5rem; align-items: center; justify-content: space-between; padding: .8rem 1rem; background: #f8f9fb; border: 1px solid var(--bd,#e0e0e0); border-radius: 8px; margin-bottom: 1.5rem; }
+    .amend-status-info { display: flex; flex-wrap: wrap; gap: .35rem 2rem; font-size: 12px; }
+    .amend-status-info b { color: #0066cc; }
+    .amend-sync-actions { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+    /* 區塊標題（修正文件 / 同步預覽） */
+    .amend-section { margin-top: 1.6rem; }
+    .amend-section-title { font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif; font-size: 13.6px; font-weight: 600; color: var(--text-primary); margin: 0 0 .75rem; padding-left: .6rem; border-left: 3px solid #0066cc; line-height: 1.5; }
+    /* 修正文件表：固定欄寬，避免內容擠壓 */
+    .amend-table { width: 100%; border-collapse: collapse; font-size: 11.2px; table-layout: fixed; }
+    .amend-table th, .amend-table td { border: 1px solid var(--bd,#e0e0e0); padding: .6rem .8rem; vertical-align: top; text-align: left; word-break: break-word; }
+    .amend-table th { background: #f8f8f8; white-space: nowrap; font-weight: 600; }
+    .amend-table td.c-count { text-align: center; }
+    .amend-file { font-weight: 700; }
+    .amend-muted { color: #7a8294; font-size: 9.6px; margin-top: 2px; }
+    .amend-acts { font-size: 10.4px; }
+    .amend-act { padding: 1px 0; }
+    .amend-act b { color: #3b6ea5; }
+    .amend-act-muted { color: #999; font-size: 9.6px; }
+    .amend-all-done { color: #1a9c67; font-size: 11.2px; font-weight: 600; }
+    .badge { display: inline-block; border-radius: 999px; padding: 2px 10px; font-size: 9.6px; font-weight: 600; white-space: nowrap; }
+    .b-applied { background: #e7f5ee; color: #1a9c67; }
+    .b-pending { background: #fff1e1; color: #c06a00; }
+    .b-blocked { background: #f1f1f4; color: #8a8a96; }
+    .amend-cell-ops { white-space: nowrap; }
+    .amend-warn { background: #fff4e5; border: 1px solid #ffcf99; color: #a15c00; padding: .6rem .9rem; border-radius: 6px; font-size: 11.2px; margin-bottom: 1rem; line-height: 1.6; }
+    .amend-warn b { color: #8a4b00; }
+    /* 同步預覽：條號固定窄欄，修正前／修正後各半 */
+    .preview-meta { display: flex; flex-wrap: wrap; gap: .35rem 2rem; align-items: center; font-size: 10.4px; color: #5b6478; margin: 0 0 .8rem; line-height: 1.7; }
+    .preview-meta b { color: #0066cc; }
+    .preview-meta-acts { display: flex; flex-wrap: wrap; gap: .2rem 1rem; }
+    .amend-preview-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .amend-preview-table col.c-key { width: 132px; }
+    .amend-preview-table th, .amend-preview-table td { border: 1px solid var(--bd,#e0e0e0); padding: .8rem .9rem; vertical-align: top; text-align: left; }
+    .amend-preview-table thead th { background: #f8f8f8; font-weight: 600; white-space: nowrap; }
+    .amend-preview-table .pkey { font-weight: 700; font-size: 12px; }
+    .pkey-badge { display: inline-block; margin-top: 5px; border-radius: 999px; padding: 1px 9px; font-size: 9.6px; font-weight: 600; }
+    .st-mod { background: #e8f0fe; color: #1a56b5; }
+    .st-add { background: #e7f5ee; color: #1a9c67; }
+    .st-del { background: #fdecec; color: #c02b2b; }
+    .amend-preview-table .pcell { white-space: pre-wrap; word-break: break-word; line-height: 1.9; font-size: 12px; font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif; }
+    .amend-preview-table .pcell-head { display: block; font-weight: 700; margin-bottom: .35rem; color: var(--text-primary); }
+    /* ---- 經歷過程：統一立法沿革時間軸 ---- */
+    /* 全國法規資料庫樣式：中文 MingLiU、數字藍色 Times（.lh-num 見 style.css），逐條以細線分隔 */
+    .law-history-jump { display: block; width: 100%; text-align: left; background: none; border: none; padding: 0; margin: 0; cursor: pointer; font: inherit; color: inherit; line-height: 2.1; }
+    .law-history-jump:hover { color: #0066cc; }
+    .law-history-entry { border-bottom: 1px solid var(--bd,#e0e0e0); padding: .55rem .15rem; }
+    .law-history-entry:last-child { border-bottom: none; }
+    #view-history .law-history-content { font-size: 12.8px; line-height: 2.1; }
+    .law-history-date { color: var(--text-primary); }
+    .law-history-count { color: #7a8294; font-size: 9.6px; }
+    /* 版本瀏覽提示條 */
+    #version-view-bar { display: flex; align-items: center; gap: .6rem; margin-top: .5rem; flex-wrap: wrap; }
+    #viewing-version-label { font-size: 11.2px; color: #0066cc; font-weight: 600; }
+    /* 移动端字号同步 × 0.8（style.css 中带 !important 的 22px 会被这里覆盖） */
+    @media (max-width: 768px) {
+      .law-title-top { font-size: 17.6px !important; }
+      .tab-item { font-size: 10.4px; }
+    }
+  </style>
+  <script src="js/theme.js"></script>
+</head>
+<body data-page-type="detail" data-tab="content">
+
+
+  <div class="breadcrumb-header onload-animation">
+    <div class="breadcrumb-container">
+      <div class="breadcrumb">
+        <button class="filter-btn btn-back" type="button" onclick="goBack()" aria-label="返回上一頁">← 返回</button>
+        <a href="index.html">首頁</a>
+        <span>/</span>
+        <span id="law-name-breadcrumb"></span>
+        <span>/</span>
+        <span id="version-type">三讀版本</span>
+        <span>/</span>
+        <span id="amend-date"></span>
+      </div>
+      <h1 class="law-title-top" id="law-title-top"></h1>
+      <div class="law-alias">簡介：<span id="law-alias"></span></div>
+      <div class="tabs-container">
+        <div class="tab-item active" data-tab="content" onclick="switchTab('content')">瀏覽法律</div>
+        <div class="tab-item" data-tab="amendment" onclick="switchTab('amendment')">異動條文</div>
+        <div class="tab-item" data-tab="amend" onclick="switchTab('amend')">修正同步</div>
+        <div class="tab-item" data-tab="history" onclick="switchTab('history')">經歷過程</div>
+        <div class="tab-item" data-tab="sublaws" onclick="switchTab('sublaws')">子法列表</div>
+        <div class="tab-item" data-tab="comparetool" onclick="switchTab('comparetool')">條文比較工具</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="app" class="onload-animation">
+    <div class="detail-layout">
+      <div class="detail-content">
+    <div class="page-header">
+      <div id="version-selector"></div>
+      <div id="version-view-bar" style="display:none">
+        <span id="viewing-version-label"></span>
+        <button id="btn-back-current" class="filter-btn" type="button">回到現行版</button>
+        <button id="btn-back-timeline" class="filter-btn" type="button">返回歷史時間軸</button>
+      </div>
+    </div>
+    <h1 id="law-title"></h1>
+
+    <!-- 瀏覽法律 -->
+    <div id="view-content" class="tab-view">
+      <div id="law-content"></div>
+    </div>
+
+    <!-- 經歷過程：立法沿革時間線 -->
+    <div id="view-history" class="tab-view" style="display:none">
+      <div class="fw-card fw-widget">
+        <div class="fw-widget-title">立法沿革時間線</div>
+        <div id="history-timeline"><div class="loading-state">加載中...</div></div>
+      </div>
+    </div>
+
+    <!-- 子法列表 -->
+    <div id="view-sublaws" class="tab-view" style="display:none">
+      <div id="sublaw-list"></div>
+    </div>
+
+    <!-- 異動條文：版本對比 -->
+    <div id="view-amendment" class="tab-view" style="display:none">
+      <div class="main-container">
+        <div class="version-sidebar" id="version-sidebar">
+          <div class="loading-state">加載版本列表中...</div>
+        </div>
+        <div class="compare-area">
+          <div class="compare-note">
+            <span class="green">綠色為新增</span> / <span class="red">紅色為刪除</span>
+          </div>
+          <div class="filter-btn-container">
+            <button id="toggleModifiedOnly" class="filter-btn">僅展示修正條文</button>
+          </div>
+          <div id="compare-content">
+            <div class="loading-state">請選擇要對比的版本</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 修正同步：以 File 文書庫為來源重放命令 -->
+    <div id="view-amend" class="tab-view" style="display:none">
+      <div class="fw-card fw-widget">
+        <div class="fw-widget-title">修正條文同步</div>
+        <p class="amend-sync-hint">此處列出 <code>File\</code> 文書庫中針對本法規的命令文書（每一列對應一個版本）。改了哪個版本的源文檔，就按該列版本旁的「同步」：依現行載入方式重放——<code>File</code> → <code>derived\</code>（命令重放）→ <code>LawCurrent\</code>（<code>--update</code>：覆蓋派生資料夾；若目標是手寫檔／手寫資料夾，先整份移入 <code>LawCurrent_退場檔</code> 保留再建派生資料夾）→ <code>atomic\</code>（供「經歷過程」時間軸）；已納入的版本亦可「重新同步」（重放冪等，結果不變）。如需回退，請修改或移除 <code>File</code> 中對應的命令文書後重新同步。</p>
+
+        <div class="amend-status-bar">
+          <div id="amend-sync-summary"></div>
+          <div id="amend-sync-actions" class="amend-sync-actions"></div>
+        </div>
+
+        <section class="amend-section">
+          <h3 class="amend-section-title">修正文件</h3>
+          <div id="amend-sync-table"></div>
+        </section>
+
+        <section class="amend-section" id="amend-preview-section" style="display:none">
+          <h3 class="amend-section-title" id="amend-preview-title">同步預覽</h3>
+          <div id="amend-preview"></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- 條文比較工具 -->
+    <div id="view-comparetool" class="tab-view" style="display:none">
+      <div class="fw-card fw-widget">
+        <div class="fw-widget-title">跨版本條文比較</div>
+        <div id="tool-controls" class="tool-controls">
+          <label>版本 A：<select id="tool-version-a" class="version-select"></select></label>
+          <label>版本 B：<select id="tool-version-b" class="version-select"></select></label>
+        </div>
+        <div id="tool-compare-content"></div>
+      </div>
+    </div>
+      </div>
+      <!-- 目录栏占位：features.js 渲染后填充，避免加载时布局跳动 -->
+      <nav class="toc-sidebar" aria-label="目錄"></nav>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/compareLaw.js"></script>
+  <script src="js/features.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      initDetailPage();
+      const tabParam = new URLSearchParams(location.search).get('tab');
+      const validTabs = ['content', 'amendment', 'amend', 'history', 'sublaws', 'comparetool'];
+      if (tabParam && validTabs.includes(tabParam)) switchTab(tabParam);
+    });
+  </script>
+</body>
+</html>

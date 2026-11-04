@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>法規查詢系統 - 台灣法規目錄</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ==================== 台灣法規目錄：分類樹 + 法規清單 ==================== */
+    :root {
+      --tw-accent: #0f7b7b;
+      --tw-accent-soft: #e8f4f4;
+      --tw-accent-line: #b7dbdb;
+      --tw-cat: #a8322a;
+    }
+    [data-theme="dark"] {
+      --tw-accent: #4fd1c5;
+      --tw-accent-soft: #12343b;
+      --tw-accent-line: #1f4a52;
+      --tw-cat: #f19a8f;
+    }
+
+    .tw-shell {
+      max-width: 75rem; margin: 0 auto;
+      display: grid; grid-template-columns: 19rem minmax(0, 1fr);
+      gap: 1rem; padding: 1rem 1rem 2.5rem; align-items: start;
+    }
+    @media (max-width: 1024px) { .tw-shell { grid-template-columns: 1fr; } }
+
+    /* ---- 左側：分類樹 ---- */
+    .tw-tree-card {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: var(--radius-large); padding: .9rem .8rem; margin-bottom: 1rem;
+    }
+    .tw-tree-title {
+      font-weight: bold; font-size: .95rem; color: var(--tw-accent);
+      padding-bottom: .5rem; border-bottom: 1px solid var(--tw-accent-line); margin-bottom: .45rem;
+    }
+    .tw-node { display: flex; align-items: flex-start; }
+    .tw-toggle, .tw-toggle-spacer {
+      flex: 0 0 1.15rem; width: 1.15rem; height: 1.15rem; margin-top: .28rem;
+      display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid var(--tw-accent-line); background: var(--bg-secondary);
+      color: var(--tw-accent); font-size: .72rem; line-height: 1; border-radius: 3px; cursor: pointer;
+    }
+    .tw-toggle-spacer { border-color: transparent; background: transparent; }
+    .tw-node-btn {
+      flex: 1; min-width: 0; display: flex; align-items: center; gap: .4rem;
+      background: none; border: none; cursor: pointer; text-align: left;
+      padding: .22rem .3rem; font-size: .92rem; color: var(--text-primary);
+      border-radius: 4px; font-family: inherit;
+    }
+    .tw-node-btn:hover { background: var(--bg-tertiary); }
+    .tw-node-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .tw-badge-num {
+      flex: 0 0 auto; margin-left: auto; min-width: 1.6rem; height: 1.3rem; padding: 0 .4rem;
+      border-radius: 999px; background: var(--tw-accent); color: #fff;
+      font-size: .74rem; display: inline-flex; align-items: center; justify-content: center;
+    }
+    .tw-node.lv0 .tw-node-btn { color: var(--tw-cat); font-weight: 600; }
+    .tw-node.lv0.is-active .tw-node-btn { color: var(--tw-accent); }
+    .tw-node.lv1 .tw-node-btn { color: var(--tw-accent); font-size: .88rem; }
+    .tw-node.is-active .tw-node-btn { background: var(--tw-accent-soft); font-weight: bold; color: var(--tw-accent); }
+    .tw-node.lv2 .tw-node-btn { color: var(--tw-accent); font-size: .86rem; }
+    /* 法規葉節點：一般文字色，選中才用青色 */
+    .tw-node.is-leaf .tw-node-btn { color: var(--text-primary); font-size: .84rem; font-weight: normal; }
+    .tw-node.is-leaf.is-active .tw-node-btn { color: var(--tw-accent); font-weight: bold; }
+    .tw-tree-sub { margin-left: .55rem; padding-left: .75rem; border-left: 1px dashed var(--tw-accent-line); }
+    .tw-tree-sub .tw-tree-sub { margin-left: .35rem; padding-left: .6rem; }
+    /* 展開到法規層後樹會很長 → 讓卡片自己捲動 */
+    #tw-tree { max-height: 56vh; overflow-y: auto; padding-right: .15rem; }
+
+    /* ---- 右側：法規清單 ---- */
+    .tw-panel {
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      border-radius: var(--radius-large); overflow: hidden;
+    }
+    .tw-panel-head {
+      display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
+      background: var(--tw-accent-soft); border-bottom: 1px solid var(--tw-accent-line);
+      padding: .55rem 1rem; color: var(--tw-accent); font-weight: bold; font-size: .95rem;
+    }
+    .tw-panel-head svg { flex: 0 0 auto; }
+    .tw-node-count { font-weight: normal; font-size: .82rem; color: var(--text-secondary); }
+    .tw-sort {
+      margin-left: auto; display: flex; align-items: center; gap: .4rem;
+      font-weight: normal; font-size: .84rem; color: var(--text-secondary);
+    }
+    .tw-sort select {
+      background: var(--bg-secondary); color: var(--text-primary);
+      border: 1px solid var(--border-color); border-radius: 4px; padding: .15rem .35rem;
+    }
+    .tw-toolbar {
+      display: flex; align-items: center; gap: .75rem; flex-wrap: wrap;
+      padding: .45rem 1rem; border-bottom: 1px solid var(--border-color);
+      font-size: .84rem; color: var(--text-secondary); min-height: 2.2rem;
+    }
+    .tw-toolbar button {
+      background: none; border: 1px solid var(--border-color); border-radius: 4px;
+      padding: .12rem .5rem; color: var(--link-color); cursor: pointer; font-size: .82rem;
+    }
+    .tw-toolbar button:hover { border-color: var(--link-color); }
+    /* 法規卡：沿用「法規目錄」頁的 fw-post-card 元件，改為多欄、較窄 */
+    .tw-cards {
+      display: grid; gap: .85rem; padding: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      align-items: start;
+    }
+    .tw-cards .fw-post-card { padding: 1rem 1.15rem; }
+    .tw-cards .fw-post-title { font-size: 1.05rem; padding-right: 1.7rem; }
+    .tw-cards .fw-post-desc { font-size: .86rem; }
+    .tw-card-check { position: absolute; top: .7rem; right: .75rem; line-height: 1; }
+    .tw-card-check input { transform: scale(.9); cursor: pointer; opacity: .75; }
+    .tw-card-check input:checked, .tw-card-check input:hover { opacity: 1; }
+    .tw-tag-inline { display: inline-block; }
+    .tw-panel .fw-empty { padding: 2rem; text-align: center; color: var(--text-secondary); }
+    .tw-panel .fw-pagination-wrap { padding: .75rem 1rem; }
+    @media (max-width: 900px) {
+      .tw-cards { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script src="js/theme.js"></script>
+</head>
+<body class="fw-home">
+
+  <!-- 顶部导航栏（Fuwari 风格） -->
+  <div class="fw-nav-wrap onload-animation">
+    <nav class="fw-navbar fw-card">
+      <a href="index.html" class="fw-site-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg>
+        法規查詢系統
+      </a>
+
+      <div class="fw-nav-links">
+        <a href="index.html">法規目錄</a>
+        <a href="tw.html" class="active">台灣法規目錄</a>
+        <a href="orders.html">相關命令</a>
+        <a href="meetings.html">相關會議</a>
+        <a href="regulations.html">重要規定</a>
+        <a href="drafts.html">草案審查</a>
+        <a href="archive.html">立法歷程</a>
+      </div>
+
+      <div class="fw-nav-actions">
+        <div class="fw-search-bar" id="fw-search-bar" role="search">
+          <svg class="fw-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="fw-search-input" class="fw-search-input" placeholder="搜尋法規…" autocomplete="off" spellcheck="false" aria-label="搜尋">
+          <div id="fw-search-dropdown" class="search-dropdown" hidden>
+            <div class="fw-search-status" id="fw-search-status"></div>
+            <div class="fw-search-results" id="fw-search-results"></div>
+          </div>
+        </div>
+        <button id="nav-menu-switch" class="fw-icon-btn fw-menu-btn" aria-label="選單">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- 移动端菜单面板 -->
+      <div id="nav-menu-panel" class="float-panel float-panel-closed fw-mobile-menu">
+        <a href="index.html">法規目錄</a>
+        <a href="tw.html" class="active">台灣法規目錄</a>
+        <a href="orders.html">相關命令</a>
+        <a href="meetings.html">相關會議</a>
+        <a href="regulations.html">重要規定</a>
+        <a href="drafts.html">草案審查</a>
+        <a href="archive.html">立法歷程</a>
+      </div>
+
+    </nav>
+  </div>
+
+  <!-- 主内容：分類樹 + 法規清單 -->
+  <div class="tw-shell">
+    <aside class="tw-side onload-animation">
+      <div class="fw-card fw-profile">
+        <div class="fw-avatar">台</div>
+        <div class="fw-name">台灣法規目錄</div>
+        <div class="fw-divider"></div>
+        <div class="fw-bio">彙整台灣現行法規（憲法、刑法、民法、行政法、經濟法等），支援全文檢索與條文快速跳轉</div>
+        <div class="fw-stats">
+          <div>
+            <div class="fw-stat-num" id="stat-categories">-</div>
+            <div class="fw-stat-label">分類</div>
+          </div>
+          <div>
+            <div class="fw-stat-num" id="stat-laws">-</div>
+            <div class="fw-stat-label">法規</div>
+          </div>
+          <div>
+            <div class="fw-stat-num" id="stat-tags">-</div>
+            <div class="fw-stat-label">標籤</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tw-tree-card">
+        <div class="tw-tree-title">法規分類</div>
+        <div id="tw-tree"></div>
+      </div>
+
+      <div class="fw-card fw-widget">
+        <div class="fw-widget-title">標籤</div>
+        <div class="fw-cats" id="fw-tags"></div>
+      </div>
+    </aside>
+
+    <main class="tw-main onload-animation">
+      <div class="tw-panel">
+        <div class="tw-panel-head">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.3-7-11a7 7 0 0 1 14 0c0 4.7-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          <span id="tw-node-name">全部法規</span>
+          <span class="tw-node-count" id="tw-node-count"></span>
+          <label class="tw-sort">排序
+            <select id="tw-sort" aria-label="排序方式">
+              <option value="name">依名稱</option>
+              <option value="date-desc">修正日期（新→舊）</option>
+              <option value="date-asc">修正日期（舊→新）</option>
+              <option value="words-desc">篇幅（多→少）</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="tw-toolbar" id="tw-toolbar"></div>
+
+        <div class="tw-cards" id="tw-cards"></div>
+
+        <div class="fw-empty" id="empty-state" style="display:none"><p>未找到符合條件的法規</p></div>
+        <div class="fw-empty" id="error-state" style="display:none"><p>數據載入失敗，請確認伺服器已啟動</p></div>
+        <div id="fw-pagination" class="fw-pagination-wrap"></div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let lawData = null;
+    let currentCat = '';        // 分類 id（'' = 全部）
+    let currentGroup = null;    // 子分類 id（null = 該分類全部）
+    let currentTag = '';
+    let currentPage = 1;
+    let sortMode = 'name';
+    const PAGE_SIZE = 8;        // 每頁筆數（沿用原本設定）
+    const expanded = {};        // 分類 id → 是否展開
+    const selected = {};        // 已勾選的法規 id
+
+    // ==================== 資料載入 ====================
+    async function init() {
+      try {
+        const res = await fetch('/api/tw-data');
+        if (!res.ok) throw new Error('Failed to load');
+        lawData = await res.json();
+      } catch (e) {
+        document.getElementById('error-state').style.display = 'block';
+        return;
+      }
+
+      const cats = lawData.laws.categories || [];
+      const allLaws = cats.flatMap(c => c.laws || []);
+      if (cats.length === 0) {
+        document.getElementById('empty-state').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('stat-categories').textContent = cats.length;
+      document.getElementById('stat-laws').textContent = allLaws.length;
+      document.getElementById('stat-tags').textContent = (lawData.laws.tags || []).length;
+
+      buildTree(cats);
+      buildTags(lawData.laws.tags || []);
+      document.getElementById('tw-sort').addEventListener('change', (e) => {
+        sortMode = e.target.value;
+        currentPage = 1;
+        render();
+      });
+      render();
+    }
+
+    // ==================== 左側分類樹（分類 → 子分類 → 法規） ====================
+    // 法規葉節點：直接跳轉到該法規的詳情頁
+    const lawHref = id => 'detail.html?lawId=' + encodeURIComponent(id);
+    const catKey = id => 'c:' + id;
+    const grpKey = (catId, gid) => 'g:' + catId + '\u0000' + gid;
+
+    function buildTree(cats) {
+      const wrap = document.getElementById('tw-tree');
+      wrap.innerHTML = '';
+      const total = cats.flatMap(c => c.laws || []).length;
+      wrap.appendChild(nodeRow({
+        label: '全部法規', count: total, level: 0,
+        active: !currentCat,
+        onSelect: () => selectNode('', null)
+      }));
+
+      cats.forEach(cat => {
+        const laws = cat.laws || [];
+        // 直接放在分類根目錄的法規（原「未分類」）不再另立節點，直接掛在分類底下
+        const rootLaws = laws.filter(l => !l.group);
+        const groups = (cat.groups || []).filter(g => g.id);
+        const ck = catKey(cat.id);
+        const hasChildren = groups.length > 0 || rootLaws.length > 0;
+
+        wrap.appendChild(nodeRow({
+          label: cat.name, count: laws.length, level: 0,
+          expandable: hasChildren, expanded: !!expanded[ck],
+          active: currentCat === cat.id && currentGroup === null,
+          onToggle: () => { expanded[ck] = !expanded[ck]; buildTree(cats); },
+          onSelect: () => selectNode(cat.id, null, ck)
+        }));
+
+        const sub = document.createElement('div');
+        sub.className = 'tw-tree-sub';
+        sub.hidden = !expanded[ck];
+
+        groups.forEach(g => {
+          const gLaws = laws.filter(l => l.group === g.id);
+          const gk = grpKey(cat.id, g.id);
+          sub.appendChild(nodeRow({
+            label: g.name, count: g.count, level: 1,
+            expandable: gLaws.length > 0, expanded: !!expanded[gk],
+            active: currentCat === cat.id && currentGroup === g.id,
+            onToggle: () => { expanded[gk] = !expanded[gk]; buildTree(cats); },
+            onSelect: () => selectNode(cat.id, g.id, gk)
+          }));
+          const gsub = document.createElement('div');
+          gsub.className = 'tw-tree-sub';
+          gsub.hidden = !expanded[gk];
+          gLaws.forEach(law => gsub.appendChild(lawRow(law, 2)));
+          sub.appendChild(gsub);
+        });
+
+        // 分類根目錄直接放的法规 → 掛在分類下一層
+        rootLaws.forEach(law => sub.appendChild(lawRow(law, 1)));
+        wrap.appendChild(sub);
+      });
+    }
+
+    // 法規葉節點：點擊即跳轉到法規詳情頁
+    function lawRow(law, level) {
+      return nodeRow({
+        label: law.title, count: null, level: level, leaf: true,
+        href: lawHref(law.id),
+        onSelect: () => { window.location.href = lawHref(law.id); }
+      });
+    }
+
+    function nodeRow(opt) {
+      const row = document.createElement('div');
+      const lvClass = opt.leaf ? 'is-leaf' : (opt.level <= 0 ? 'lv0' : (opt.level === 1 ? 'lv1' : 'lv2'));
+      row.className = 'tw-node ' + lvClass + (opt.active ? ' is-active' : '');
+
+      if (opt.expandable) {
+        const t = document.createElement('button');
+        t.type = 'button';
+        t.className = 'tw-toggle';
+        t.textContent = opt.expanded ? '−' : '+';
+        t.setAttribute('aria-expanded', opt.expanded ? 'true' : 'false');
+        t.setAttribute('aria-label', (opt.expanded ? '收合 ' : '展開 ') + opt.label);
+        t.addEventListener('click', (e) => { e.stopPropagation(); opt.onToggle(); });
+        row.appendChild(t);
+      } else {
+        const sp = document.createElement('span');
+        sp.className = 'tw-toggle-spacer';
+        row.appendChild(sp);
+      }
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'tw-node-btn';
+      btn.title = opt.label + (opt.href ? '（點擊開啟法規）' : '');
+      if (opt.href) row.dataset.href = opt.href;
+      btn.innerHTML = `<span class="tw-node-label">${esc(opt.label)}</span>` +
+        (opt.count == null ? '' : `<span class="tw-badge-num">${opt.count}</span>`);
+      btn.addEventListener('click', () => opt.onSelect());
+      row.appendChild(btn);
+      return row;
+    }
+
+    function selectNode(catId, groupId, toggleKey) {
+      // 先判斷是不是「再點一次同一個節點」→ 該節點收合
+      const sameNode = currentCat === catId && currentGroup === groupId;
+      currentCat = catId;
+      currentGroup = groupId;
+      currentTag = '';
+      currentPage = 1;
+      document.querySelectorAll('#fw-tags .fw-tag-pill').forEach(el => el.classList.remove('active'));
+      // 選取後自動展開路徑，讓選中的節點與其下的法規保持可見
+      if (catId) expanded[catKey(catId)] = true;
+      if (catId && groupId) expanded[grpKey(catId, groupId)] = true;
+      // 點分類／子分類名稱 = 選取 + 展開（第一下）；再點同一節點 = 收合
+      if (toggleKey) expanded[toggleKey] = sameNode ? !expanded[toggleKey] : true;
+      buildTree(lawData.laws.categories || []);
+      updateNodeHead();
+      render();
+    }
+
+    function updateNodeHead() {
+      const nameEl = document.getElementById('tw-node-name');
+      if (!currentCat) { nameEl.textContent = currentTag ? '#' + currentTag : '全部法規'; return; }
+      const cat = (lawData.laws.categories || []).find(c => c.id === currentCat);
+      const parts = [cat ? cat.name : currentCat];
+      if (currentGroup !== null && cat) {
+        const g = (cat.groups || []).find(x => x.id === currentGroup);
+        if (g) parts.push(g.name);
+      }
+      let text = parts.join(' › ');
+      if (currentTag) text += ' ｜ #' + currentTag;
+      nameEl.textContent = text;
+    }
+
+    // ==================== 標籤 ====================
+    function buildTags(tags) {
+      const wrap = document.getElementById('fw-tags');
+      wrap.innerHTML = '';
+      if (tags.length === 0) {
+        wrap.innerHTML = '<span style="color:var(--text-secondary);font-size:.85rem">無標籤</span>';
+        return;
+      }
+      tags.forEach(tag => {
+        const btn = document.createElement('button');
+        btn.className = 'fw-cat-pill fw-tag-pill';
+        btn.innerHTML = `<span>#${tag.name}</span><span class="fw-cat-count">${tag.count}</span>`;
+        btn.addEventListener('click', () => {
+          const isActive = btn.classList.contains('active');
+          document.querySelectorAll('#fw-tags .fw-tag-pill').forEach(el => el.classList.remove('active'));
+          if (isActive) {
+            currentTag = '';
+          } else {
+            btn.classList.add('active');
+            currentTag = tag.name;
+            currentCat = '';
+            currentGroup = null;
+          }
+          currentPage = 1;
+          buildTree(lawData.laws.categories || []);
+          updateNodeHead();
+          render();
+        });
+        wrap.appendChild(btn);
+      });
+    }
+
+    // ==================== 資料篩選 ====================
+    function collectLaws() {
+      const cats = lawData.laws.categories || [];
+      let out = [];
+      cats.forEach(cat => {
+        if (currentCat && cat.id !== currentCat) return;
+        (cat.laws || []).forEach(l => {
+          if (currentGroup !== null && (l.group || '') !== currentGroup) return;
+          out.push(Object.assign({}, l, { catName: cat.name, catId: cat.id }));
+        });
+      });
+      if (currentTag) out = out.filter(l => (l.tags || []).includes(currentTag));
+      return sortLaws(out);
+    }
+
+    function sortLaws(list) {
+      const byName = (a, b) => String(a.title).localeCompare(String(b.title), 'zh-Hant');
+      const dateOf = l => (l.versions && l.versions[0] && l.versions[0].date) || '';
+      switch (sortMode) {
+        case 'date-desc': return list.slice().sort((a, b) => dateOf(b).localeCompare(dateOf(a)) || byName(a, b));
+        case 'date-asc': return list.slice().sort((a, b) => dateOf(a).localeCompare(dateOf(b)) || byName(a, b));
+        case 'words-desc': return list.slice().sort((a, b) => (b.words || 0) - (a.words || 0) || byName(a, b));
+        default: return list.slice().sort(byName);
+      }
+    }
+
+    // 西元 → 民國（2026-06-20 → 民國 115 年 06 月 20 日）
+    function rocDate(dateStr) {
+      if (!dateStr) return '—';
+      const m = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (!m) return String(dateStr);
+      return '民國 ' + (parseInt(m[1], 10) - 1911) + ' 年 ' + m[2] + ' 月 ' + m[3] + ' 日';
+    }
+
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    // 複製文字：clipboard API 不可用時退回 execCommand（同步、不需權限）
+    function legacyCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.top = '-1000px';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch (e) { /* 忽略 */ }
+      ta.remove();
+    }
+
+    // ==================== 清單渲染（法規卡，沿用 fw-post-card） ====================
+    function render() {
+      const wrap = document.getElementById('tw-cards');
+      const empty = document.getElementById('empty-state');
+      wrap.innerHTML = '';
+
+      const laws = collectLaws();
+      document.getElementById('tw-node-count').textContent = laws.length ? '共 ' + laws.length + ' 筆' : '';
+
+      if (laws.length === 0) {
+        empty.style.display = 'block';
+        empty.querySelector('p').textContent = '未找到符合條件的法規';
+        renderPagination(0);
+        renderToolbar([]);
+        return;
+      }
+      empty.style.display = 'none';
+
+      const totalPages = Math.max(1, Math.ceil(laws.length / PAGE_SIZE));
+      if (currentPage > totalPages) currentPage = totalPages;
+      const start = (currentPage - 1) * PAGE_SIZE;
+      const pageLaws = laws.slice(start, start + PAGE_SIZE);
+
+      pageLaws.forEach((law) => {
+        const card = document.createElement('article');
+        card.className = 'fw-card fw-post-card';
+        const tagsHtml = (law.tags && law.tags.length > 0)
+          ? law.tags.map(t => `<span class="fw-badge tag">#${esc(t)}</span>`).join('')
+          : '';
+        card.innerHTML = `
+          <span class="tw-card-check"><input type="checkbox"${selected[law.id] ? ' checked' : ''} aria-label="選取 ${esc(law.title)}"></span>
+          <h2 class="fw-post-title">${esc(law.title)}</h2>
+          <div class="fw-post-meta">
+            <span class="meta-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            <span>${rocDate(law.versions[0] && law.versions[0].date)}</span>
+            <span class="with-divider fw-badge cat">${esc(law.catName)}</span>
+            ${law.abolished ? '<span class="fw-badge abolished">已廢止</span>' : ''}
+            ${tagsHtml}
+          </div>
+          <div class="fw-post-desc">${esc(law.alias || ('閱讀更多關於「' + law.title + '」的內容'))}</div>
+          <div class="fw-post-footer"><span>${law.words} 字</span><span>|</span><span>${law.minutes} 分鐘</span></div>
+          <a href="${lawHref(law.id)}" class="fw-read-more">閱讀全文 →</a>
+        `;
+        const cb = card.querySelector('input[type=checkbox]');
+        cb.addEventListener('click', (e) => e.stopPropagation());
+        cb.addEventListener('change', () => {
+          if (cb.checked) selected[law.id] = true; else delete selected[law.id];
+          renderToolbar(pageLaws);
+        });
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('a') || e.target.closest('input')) return;
+          window.location.href = lawHref(law.id);
+        });
+        wrap.appendChild(card);
+      });
+
+      renderToolbar(pageLaws);
+      renderPagination(totalPages);
+    }
+    // 已勾選筆數＋批次動作（複製名稱）
+    function renderToolbar(pageLaws) {
+      const bar = document.getElementById('tw-toolbar');
+      const ids = Object.keys(selected);
+      if (ids.length === 0) {
+        bar.innerHTML = '<span>點分類名稱可直接展開／收合並篩選清單；勾選法規可批次複製名稱。</span>';
+        return;
+      }
+      bar.innerHTML = `<span>已選 <b>${ids.length}</b> 筆</span>
+        <button type="button" id="tw-copy">複製名稱</button>
+        <button type="button" id="tw-clear">清除選取</button>`;
+      bar.querySelector('#tw-copy').addEventListener('click', () => {
+        const cats = lawData.laws.categories || [];
+        const all = cats.flatMap(c => c.laws || []);
+        const titles = ids.map(id => (all.find(l => l.id === id) || {}).title).filter(Boolean);
+        const text = titles.join('\n');
+        const btn = bar.querySelector('#tw-copy');
+        const done = () => { btn.textContent = '已複製 ' + titles.length + ' 筆'; };
+        // clipboard API 在無權限時可能既不 resolve 也不 reject → 同步 fallback 先擋著
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          let settled = false;
+          const timer = setTimeout(() => { if (!settled) { settled = true; legacyCopy(text); done(); } }, 300);
+          navigator.clipboard.writeText(text).then(() => {
+            if (settled) return; settled = true; clearTimeout(timer); done();
+          }).catch(() => {
+            if (settled) return; settled = true; clearTimeout(timer); legacyCopy(text); done();
+          });
+        } else {
+          legacyCopy(text); done();
+        }
+      });
+      bar.querySelector('#tw-clear').addEventListener('click', () => {
+        Object.keys(selected).forEach(k => delete selected[k]);
+        render();
+      });
+    }
+
+    function renderPagination(totalPages) {
+      const wrap = document.getElementById('fw-pagination');
+      if (!wrap) return;
+      if (!window.FWPagination || totalPages <= 1) {
+        wrap.innerHTML = '';
+        return;
+      }
+      FWPagination.render(wrap, {
+        current: currentPage,
+        last: totalPages,
+        onPage: function (p) {
+          currentPage = p;
+          render();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+  <script src="js/features.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/pagination.js"></script>
+</body>
+</html>

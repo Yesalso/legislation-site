@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>命令詳情</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <script src="js/theme.js"></script>
+</head>
+<body data-page-type="order">
+
+
+  <div class="breadcrumb-header onload-animation">
+    <div class="breadcrumb-container">
+      <div class="breadcrumb">
+        <button class="filter-btn btn-back" type="button" onclick="goBack()" aria-label="返回上一頁">← 返回</button>
+        <a href="index.html">首頁</a>
+        <span>/</span>
+        <span id="order-name-breadcrumb"></span>
+        <span>/</span>
+        <span id="version-type">最新版本</span>
+        <span>/</span>
+        <span id="amend-date"></span>
+      </div>
+      <h1 class="law-title-top" id="order-title-top"></h1>
+      <div class="order-alias">簡介：<span id="order-alias"></span></div>
+      <div class="tabs-container">
+        <div class="tab-item active">瀏覽命令</div>
+        <div class="tab-item">經歷過程</div>
+        <div class="tab-item">子命令列表</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="app" class="onload-animation">
+    <div class="detail-layout">
+      <div class="detail-content">
+    <div class="page-header"><div id="version-selector"></div></div>
+    <h1 id="order-title"></h1>
+    <div id="order-content"></div>
+      </div>
+      <!-- 目录栏占位：features.js 渲染后填充，避免加载时布局跳动 -->
+      <nav class="toc-sidebar" aria-label="目錄"></nav>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/features.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      initOrderDetailPage();
+    });
+  </script>
+</body>
+</html>

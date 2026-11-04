@@ -1,0 +1,54 @@
+name: Deploy to GitHub Pages
+
+# 每次推送到 main 自动构建并部署「界面展示版」静态站点。
+# 预览地址：https://<owner>.github.io/<repo>/
+# 前置条件：Settings → Pages → Build and deployment → Source 必须选「GitHub Actions」，
+#          否则 configure-pages 会报 "Get Pages site failed"。
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 导出脚本零依赖（只用 fs/path），不需要 npm install
+      - name: 生成静态站点
+        run: node tools/export-static.js
+
+      # Jekyll 会忽略 _ 开头的文件，并把 JS 里的 {{ }} 当 Liquid 解析
+      - name: 关闭 Jekyll
+        run: touch site/.nojekyll
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

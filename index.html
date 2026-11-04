@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>法規查詢系統</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ==================== 首頁右側欄（動態／統計／站點信息／日曆） ==================== */
+    :root {
+      --hw-accent: #2f9e44;
+      --hw-line: var(--border-color);
+      --hw-cell: rgba(52, 152, 219, .08);
+    }
+    [data-theme="dark"] { --hw-cell: rgba(74, 158, 255, .12); }
+
+    .fw-rightbar { min-width: 0; }
+    .fw-rightbar .hw-widget { padding: .9rem 1rem; margin-bottom: 1rem; }
+    .fw-rightbar .fw-widget-title { margin-bottom: .7rem; }
+
+    /* 最新動態 */
+    .hw-act-item {
+      display: block; text-decoration: none; padding: .45rem 0;
+      border-bottom: 1px dashed var(--hw-line);
+    }
+    .hw-act-item:last-child { border-bottom: none; }
+    .hw-act-date { font-size: .76rem; color: var(--text-secondary); }
+    .hw-act-title {
+      display: block; margin-top: .1rem; font-size: .88rem; font-weight: 600; color: var(--text-primary);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .hw-act-item:hover .hw-act-title { color: var(--primary); }
+    .hw-empty { text-align: center; color: var(--text-secondary); font-size: .88rem; padding: 1.1rem 0 .6rem; }
+    .hw-more {
+      display: flex; align-items: center; justify-content: center; gap: .3rem;
+      margin-top: .7rem; padding-top: .6rem; border-top: 1px solid var(--hw-line);
+      color: var(--hw-accent); font-size: .85rem; font-weight: 600; text-decoration: none;
+    }
+    .hw-more:hover { text-decoration: underline; }
+
+    /* 站點統計 / 站點信息 */
+    .hw-stats, .hw-info { list-style: none; margin: 0; padding: 0; }
+    .hw-row {
+      display: flex; align-items: center; gap: .55rem;
+      padding: .42rem 0; font-size: .88rem; color: var(--text-secondary);
+    }
+    .hw-row + .hw-row { border-top: 1px solid var(--hw-line); }
+    .hw-ico { flex: 0 0 auto; color: var(--primary); opacity: .85; display: inline-flex; }
+    .hw-row .hw-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .hw-value { color: var(--text-primary); font-weight: 600; white-space: nowrap; }
+    .hw-toggle {
+      display: flex; align-items: center; justify-content: center; gap: .35rem;
+      width: 100%; margin-top: .7rem; padding: .4rem 0 0; border: none; border-top: 1px solid var(--hw-line);
+      background: none; color: var(--hw-accent); font-size: .85rem; font-weight: 600; cursor: pointer;
+      font-family: inherit;
+    }
+    .hw-toggle svg { transition: transform .2s ease; }
+    .hw-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+    .hw-build { margin-top: .6rem; font-size: .8rem; color: var(--text-secondary); line-height: 1.7; }
+    .hw-build code {
+      background: var(--bg-tertiary); border-radius: 3px; padding: 0 .3rem;
+      font-size: .76rem; word-break: break-all;
+    }
+
+    /* 日曆 */
+    .hw-cal-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: .55rem;
+    }
+    .hw-cal-title { font-weight: bold; font-size: .95rem; color: var(--text-primary); }
+    .hw-cal-nav {
+      width: 1.6rem; height: 1.6rem; border: 1px solid var(--hw-line); border-radius: .4rem;
+      background: none; color: var(--text-secondary); cursor: pointer; line-height: 1;
+      font-size: 1rem; font-family: inherit;
+    }
+    .hw-cal-nav:hover { border-color: var(--primary); color: var(--primary); }
+    .hw-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+    .hw-cal-dow { font-size: .72rem; color: var(--text-secondary); padding-bottom: .2rem; }
+    .hw-cal-day {
+      font-size: .8rem; color: var(--text-primary); padding: .28rem 0; border-radius: .35rem;
+      position: relative;
+    }
+    .hw-cal-day.is-blank { visibility: hidden; }
+    .hw-cal-day.has-act { background: var(--hw-cell); font-weight: 600; }
+    .hw-cal-day.is-today { outline: 2px solid var(--primary); outline-offset: -2px; font-weight: bold; }
+
+    /* 活動熱力圖（12 個月 × 6 個時段） */
+    .hw-heat { margin-top: .8rem; }
+    .hw-heat-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; }
+    .hw-heat-cell { aspect-ratio: 1 / 1; border-radius: 2px; background: var(--bg-tertiary); }
+    .hw-heat-cell.lv1 { background: rgba(52, 152, 219, .25); }
+    .hw-heat-cell.lv2 { background: rgba(52, 152, 219, .45); }
+    .hw-heat-cell.lv3 { background: rgba(52, 152, 219, .7); }
+    .hw-heat-cell.lv4 { background: var(--primary); }
+    .hw-heat-months { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; margin-top: 3px; }
+    .hw-heat-months span { font-size: .6rem; color: var(--text-secondary); text-align: center; }
+    .hw-heat-legend { margin-top: .45rem; font-size: .72rem; color: var(--text-secondary); text-align: right; }
+
+    /* 列表工具栏：排序 + 已廢止开关 */
+    .fw-list-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: .8rem; flex-wrap: wrap; margin-bottom: .9rem;
+    }
+    .fw-sort {
+      display: inline-flex; gap: .15rem; padding: .2rem;
+      background: var(--bg-tertiary); border-radius: .6rem;
+    }
+    .fw-sort button {
+      border: none; background: none; font-family: inherit; font-size: .82rem;
+      color: var(--text-secondary); padding: .3rem .75rem; border-radius: .45rem; cursor: pointer;
+      transition: background .15s ease, color .15s ease;
+    }
+    .fw-sort button:hover { color: var(--text-primary); }
+    .fw-sort button.active { background: var(--primary); color: #fff; }
+    .fw-cat-pill.is-abolished { color: #dc3545; }
+    .fw-cat-pill.is-abolished:hover,
+    .fw-cat-pill.is-abolished.active { background: #dc3545; color: #fff; }
+    .fw-show-abolished {
+      display: inline-flex; align-items: center; gap: .35rem;
+      font-size: .82rem; color: var(--text-secondary); cursor: pointer; user-select: none;
+    }
+    .fw-show-abolished input { accent-color: var(--primary); cursor: pointer; }
+
+    @media (min-width: 1180px) {
+      body.has-rightbar .fw-layout { grid-template-columns: 17.5rem minmax(0, 1fr) 19rem; }
+    }
+    /* 1180px 以下：右側欄落到主內容下方（保持 theme.css 的兩欄／單欄結構） */
+    @media (max-width: 1179px) {
+      .fw-rightbar { grid-column: 2; }
+    }
+    @media (max-width: 1024px) {
+      .fw-rightbar { grid-column: 1; }
+      .fw-rightbar .hw-widget { margin-bottom: .8rem; }
+    }
+  </style>
+  <script src="js/theme.js"></script>
+</head>
+<body class="fw-home has-rightbar">
+
+  <!-- 顶部导航栏（Fuwari 风格） -->
+  <div class="fw-nav-wrap onload-animation">
+    <nav class="fw-navbar fw-card">
+      <a href="index.html" class="fw-site-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg>
+        法規查詢系統
+      </a>
+
+      <div class="fw-nav-links">
+        <a href="index.html" class="active">法規目錄</a>
+        <a href="tw.html">台灣法規目錄</a>
+        <a href="orders.html">相關命令</a>
+        <a href="meetings.html">相關會議</a>
+        <a href="regulations.html">重要規定</a>
+        <a href="drafts.html">草案審查</a>
+        <a href="archive.html">立法歷程</a>
+      </div>
+
+
+
+      <div class="fw-nav-actions">
+        <div class="fw-search-bar" id="fw-search-bar" role="search">
+          <svg class="fw-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="fw-search-input" class="fw-search-input" placeholder="搜尋法規…" autocomplete="off" spellcheck="false" aria-label="搜尋">
+          <div id="fw-search-dropdown" class="search-dropdown" hidden>
+            <div class="fw-search-status" id="fw-search-status"></div>
+            <div class="fw-search-results" id="fw-search-results"></div>
+          </div>
+        </div>
+        <button id="nav-menu-switch" class="fw-icon-btn fw-menu-btn" aria-label="選單">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+        </button>
+      </div>
+
+
+
+      <!-- 移动端菜单面板 -->
+      <div id="nav-menu-panel" class="float-panel float-panel-closed fw-mobile-menu">
+        <a href="index.html" class="active">法規目錄</a>
+        <a href="tw.html">台灣法規目錄</a>
+        <a href="orders.html">相關命令</a>
+        <a href="meetings.html">相關會議</a>
+        <a href="regulations.html">重要規定</a>
+        <a href="drafts.html">草案審查</a>
+        <a href="archive.html">立法歷程</a>
+      </div>
+
+    </nav>
+  </div>
+
+  <!-- 主内容：侧边栏 + 文章列表 -->
+  <div class="fw-layout">
+    <aside class="fw-sidebar onload-animation">
+      <div class="fw-card fw-profile">
+        <div class="fw-avatar">法</div>
+        <div class="fw-name">法規查詢系統</div>
+        <div class="fw-divider"></div>
+        <div class="fw-bio">彙整法規、命令、會議紀錄與草案審查，支援全文檢索與條文快速跳轉</div>
+        <div class="fw-stats">
+          <div>
+            <div class="fw-stat-num" id="stat-categories">-</div>
+            <div class="fw-stat-label">分類</div>
+          </div>
+          <div>
+            <div class="fw-stat-num" id="stat-laws">-</div>
+            <div class="fw-stat-label">法規</div>
+          </div>
+          <div>
+            <div class="fw-stat-num" id="stat-tags">-</div>
+            <div class="fw-stat-label">標籤</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fw-card fw-widget">
+        <div class="fw-widget-title">分類</div>
+        <div class="fw-cats" id="fw-cats"></div>
+      </div>
+
+      <div class="fw-card fw-widget">
+        <div class="fw-widget-title">標籤</div>
+        <div class="fw-cats" id="fw-tags"></div>
+      </div>
+    </aside>
+
+    <main class="fw-main onload-animation">
+      <div class="fw-list-toolbar">
+        <div class="fw-sort" id="fw-sort" role="group" aria-label="排序方式">
+          <button type="button" data-sort="freq" class="active">常用</button>
+          <button type="button" data-sort="latest">最新修正</button>
+          <button type="button" data-sort="name">名稱</button>
+        </div>
+        <label class="fw-show-abolished">
+          <input type="checkbox" id="fw-show-abolished">
+          顯示已廢止
+        </label>
+      </div>
+      <div id="fw-post-list"></div>
+      <div class="fw-empty" id="empty-state" style="display:none"><p>未找到符合條件的法規</p></div>
+      <div class="fw-empty" id="error-state" style="display:none"><p>數據載入失敗，請確認伺服器已啟動</p></div>
+      <div id="fw-pagination" class="fw-pagination-wrap"></div>
+    </main>
+
+    <!-- 右側欄：最新動態 / 站點統計 / 站點信息 / 日曆與活動熱力圖 -->
+    <aside class="fw-rightbar onload-animation">
+      <div class="fw-card hw-widget">
+        <div class="fw-widget-title">最新動態</div>
+        <div id="hw-activity"></div>
+        <a class="hw-more" href="archive.html">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>
+          更多動態
+        </a>
+      </div>
+
+      <div class="fw-card hw-widget">
+        <div class="fw-widget-title">站點統計</div>
+        <ul class="hw-stats" id="hw-stats"></ul>
+      </div>
+
+      <div class="fw-card hw-widget">
+        <div class="fw-widget-title">站點信息</div>
+        <ul class="hw-info" id="hw-info"></ul>
+        <button class="hw-toggle" id="hw-build-toggle" type="button" aria-expanded="false" aria-controls="hw-build">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          <span id="hw-build-toggle-text">展開構建信息</span>
+        </button>
+        <div class="hw-build" id="hw-build" hidden></div>
+      </div>
+
+      <div class="fw-card hw-widget">
+        <div class="hw-cal-head">
+          <button class="hw-cal-nav" id="hw-cal-prev" type="button" aria-label="上個月">‹</button>
+          <div class="hw-cal-title" id="hw-cal-title">—</div>
+          <button class="hw-cal-nav" id="hw-cal-next" type="button" aria-label="下個月">›</button>
+        </div>
+        <div class="hw-cal-grid" id="hw-cal-grid"></div>
+        <div class="hw-heat" id="hw-heat"></div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    let lawData = null;
+    let currentCat = '';
+    let currentTag = '';
+    let sortMode = 'freq';        // freq 常用（點擊數）｜latest 最新修正｜name 名稱
+    let showAbolished = false;    // 默認過濾已廢止，可勾選顯示
+    const PAGE_SIZE = 8; // 每页条数（照 fuwari PAGE_SIZE）
+    let currentPage = 1;
+
+    // 点击频率统计：服务端全局计数（跨设备共享），localStorage 仅作服务端不可用时的兜底
+    const CLICK_KEY = 'lawClickCounts';
+    let clickCountsGlobal = null;
+    function getClickCounts() {
+      try { return JSON.parse(localStorage.getItem(CLICK_KEY) || '{}'); } catch (e) { return {}; }
+    }
+    function recordClick(id) {
+      try {
+        fetch('/api/click', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ lawId: id }) }).catch(function () {});
+      } catch (e) {}
+      const counts = getClickCounts();
+      counts[id] = (counts[id] || 0) + 1;
+      try { localStorage.setItem(CLICK_KEY, JSON.stringify(counts)); } catch (e) {}
+    }
+
+    // ==================== 数据加载 ====================
+    async function init() {
+      try {
+        const res = await fetch('/api/data');
+        if (!res.ok) throw new Error('Failed to load');
+        lawData = await res.json();
+      } catch (e) {
+        document.getElementById('error-state').style.display = 'block';
+        return;
+      }
+
+      // 加载全局点击计数（服务端不可用时回退 localStorage 兜底）
+      try {
+        const cr = await fetch('/api/click');
+        if (cr.ok) clickCountsGlobal = await cr.json();
+      } catch (e) {}
+
+      const cats = lawData.laws.categories || [];
+      const activeCats = cats.filter(c => !c.abolished);
+      const allLaws = activeCats.flatMap(c => c.laws || []);
+      if (cats.length === 0) {
+        document.getElementById('empty-state').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('stat-categories').textContent = activeCats.length;
+      document.getElementById('stat-laws').textContent = allLaws.length;
+      document.getElementById('stat-tags').textContent = (lawData.laws.tags || []).length;
+
+      buildCategories(cats);
+      buildTags(lawData.laws.tags || []);
+      bindToolbar();
+      render();
+    }
+
+    function buildCategories(cats) {
+      const wrap = document.getElementById('fw-cats');
+      wrap.innerHTML = '';
+      const active = cats.filter(c => !c.abolished);
+      const abol = cats.find(c => c.abolished);
+      const activeTotal = active.reduce((n, c) => n + (c.laws || []).length, 0);
+
+      const allBtn = document.createElement('button');
+      allBtn.className = 'fw-cat-pill active';
+      allBtn.innerHTML = `<span>全部</span><span class="fw-cat-count">${activeTotal}</span>`;
+      allBtn.addEventListener('click', () => {
+        currentCat = '';
+        currentTag = '';
+        currentPage = 1;
+        document.querySelectorAll('#fw-tags .fw-tag-pill').forEach(el => el.classList.remove('active'));
+        wrap.querySelectorAll('.fw-cat-pill').forEach(el => el.classList.remove('active'));
+        allBtn.classList.add('active');
+        render();
+      });
+      wrap.appendChild(allBtn);
+
+      active.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'fw-cat-pill';
+        btn.innerHTML = `<span>${cat.name}</span><span class="fw-cat-count">${(cat.laws || []).length}</span>`;
+        btn.addEventListener('click', () => {
+          currentTag = '';
+          document.querySelectorAll('#fw-tags .fw-tag-pill').forEach(el => el.classList.remove('active'));
+          if (currentCat === cat.id) {
+            currentCat = '';
+            allBtn.classList.add('active');
+          } else {
+            currentCat = cat.id;
+            wrap.querySelectorAll('.fw-cat-pill').forEach(el => el.classList.remove('active'));
+            btn.classList.add('active');
+          }
+          currentPage = 1;
+          render();
+        });
+        wrap.appendChild(btn);
+      });
+
+      // 已廢止：服務端已集中成單一分類，置於最後，僅在此檢視時不套用過濾開關
+      if (abol) {
+        const btn = document.createElement('button');
+        btn.className = 'fw-cat-pill is-abolished';
+        btn.innerHTML = `<span>已廢止</span><span class="fw-cat-count">${(abol.laws || []).length}</span>`;
+        btn.addEventListener('click', () => {
+          currentTag = '';
+          document.querySelectorAll('#fw-tags .fw-tag-pill').forEach(el => el.classList.remove('active'));
+          if (currentCat === 'abolished') {
+            currentCat = '';
+            allBtn.classList.add('active');
+          } else {
+            currentCat = 'abolished';
+            wrap.querySelectorAll('.fw-cat-pill').forEach(el => el.classList.remove('active'));
+            btn.classList.add('active');
+          }
+          currentPage = 1;
+          render();
+        });
+        wrap.appendChild(btn);
+      }
+    }
+
+    function bindToolbar() {
+      document.querySelectorAll('#fw-sort button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          sortMode = btn.dataset.sort;
+          document.querySelectorAll('#fw-sort button').forEach(x => x.classList.toggle('active', x === btn));
+          currentPage = 1;
+          render();
+        });
+      });
+      const cb = document.getElementById('fw-show-abolished');
+      if (cb) cb.addEventListener('change', () => {
+        showAbolished = cb.checked;
+        currentPage = 1;
+        render();
+      });
+    }
+
+    function buildTags(tags) {
+      const wrap = document.getElementById('fw-tags');
+      if (tags.length === 0) {
+        wrap.innerHTML = '<span style="color:var(--text-secondary);font-size:.85rem">無標籤</span>';
+        return;
+      }
+      tags.forEach(tag => {
+        const btn = document.createElement('button');
+        btn.className = 'fw-cat-pill fw-tag-pill';
+        btn.innerHTML = `<span>#${tag.name}</span><span class="fw-cat-count">${tag.count}</span>`;
+        btn.addEventListener('click', () => {
+          const isActive = btn.classList.contains('active');
+          document.querySelectorAll('#fw-tags .fw-tag-pill').forEach(el => el.classList.remove('active'));
+          if (isActive) {
+            currentTag = '';
+          } else {
+            btn.classList.add('active');
+            currentTag = tag.name;
+          }
+          currentPage = 1;
+          render();
+        });
+        wrap.appendChild(btn);
+      });
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      // 先取 YYYY-MM-DD 前綴，避免未清洗的 ISO 時間戳（2026-09-03T00:00:00.000Z）原樣顯示
+      const m = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
+      return m ? m[0] : String(dateStr).slice(0, 10);
+    }
+
+    // 法規顯示日期＝現行版（最新修正）日期，與右側「最新動態」同口徑
+    function lawDate(law) {
+      if (typeof window.lawLatestDate === 'function') return window.lawLatestDate(law);
+      const vs = law.versions || [];
+      const cur = vs.find(v => v.isCurrent) || vs[vs.length - 1] || null;
+      return String((cur && cur.date) || law.modified || '').slice(0, 10);
+    }
+
+    // 攤平目錄：補上原分類與廢止標記（服務端已把已廢止集中成單一分類）
+    function flattenLaws(cats) {
+      return (cats || []).flatMap(c => (c.laws || []).map(l => Object.assign({}, l, {
+        catId: c.abolished ? 'abolished' : c.id,
+        catName: l.originCat || String(c.name || '').replace(/（已廢止）$/, ''),
+        isAbolished: !!(c.abolished || l.abolished)
+      })));
+    }
+
+    function render() {
+      const list = document.getElementById('fw-post-list');
+      const empty = document.getElementById('empty-state');
+      list.innerHTML = '';
+
+      const cats = lawData.laws.categories || [];
+      let laws = flattenLaws(cats);
+
+      if (currentTag) laws = laws.filter(l => (l.tags || []).includes(currentTag));
+      if (currentCat === 'abolished') {
+        laws = laws.filter(l => l.isAbolished);
+      } else {
+        if (currentCat) laws = laws.filter(l => l.catId === currentCat);
+        if (!showAbolished) laws = laws.filter(l => !l.isAbolished);
+      }
+
+      if (laws.length === 0) {
+        empty.style.display = 'block';
+        empty.querySelector('p').textContent = currentCat === 'abolished' ? '沒有已廢止的法規' : '未找到符合條件的法規';
+        renderPagination(0);
+        return;
+      }
+      empty.style.display = 'none';
+
+      // 排序：常用（點擊數）> 最新修正 > 名稱；同名次以最新日期、標題兜底，保證順序穩定
+      const clickCounts = clickCountsGlobal || getClickCounts();
+      const byDate = (a, b) => lawDate(b).localeCompare(lawDate(a)) || a.title.localeCompare(b.title, 'zh-Hant');
+      if (sortMode === 'latest') laws.sort(byDate);
+      else if (sortMode === 'name') laws.sort((a, b) => a.title.localeCompare(b.title, 'zh-Hant'));
+      else laws.sort((a, b) => (clickCounts[b.id] || 0) - (clickCounts[a.id] || 0) || byDate(a, b));
+
+      // Fuwari 式分页（每页 PAGE_SIZE 条）
+      const totalPages = Math.max(1, Math.ceil(laws.length / PAGE_SIZE));
+      if (currentPage > totalPages) currentPage = totalPages;
+      const pageLaws = laws.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+      pageLaws.forEach(law => {
+        const card = document.createElement('article');
+        card.className = 'fw-card fw-post-card onload-animation';
+        const tagsHtml = (law.tags && law.tags.length > 0)
+          ? law.tags.map(t => `<span class="fw-badge tag">#${t}</span>`).join('')
+          : '<span class="fw-badge">無標籤</span>';
+        card.innerHTML = `
+          <h2 class="fw-post-title">${law.title}</h2>
+          <div class="fw-post-meta">
+            <span class="meta-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            <span>${formatDate(lawDate(law))}</span>
+            <span class="with-divider fw-badge cat">${law.catName}</span>
+            ${law.isAbolished ? '<span class="fw-badge abolished">已廢止</span>' : ''}
+            ${tagsHtml}
+          </div>
+          <div class="fw-post-desc">${law.alias ? law.alias : (law.excerpt || '閱讀更多關於「' + law.title + '」的內容')}</div>
+          <div class="fw-post-footer">
+            <span>${law.words} 字</span><span>|</span><span>${law.minutes} 分鐘</span>
+          </div>
+          <a href="detail.html?lawId=${encodeURIComponent(law.id)}" class="fw-read-more">閱讀全文 →</a>
+        `;
+        card.addEventListener('click', (e) => {
+          recordClick(law.id);
+          if (e.target.closest('a')) return;
+          window.location.href = 'detail.html?lawId=' + encodeURIComponent(law.id);
+        });
+        list.appendChild(card);
+      });
+
+      renderPagination(totalPages);
+    }
+
+    // Fuwari 式分页条渲染
+    function renderPagination(totalPages) {
+      const wrap = document.getElementById('fw-pagination');
+      if (!wrap) return;
+      if (!window.FWPagination || totalPages <= 1) {
+        wrap.innerHTML = '';
+        return;
+      }
+      FWPagination.render(wrap, {
+        current: currentPage,
+        last: totalPages,
+        onPage: function(p) {
+          currentPage = p;
+          render();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+  <script src="js/features.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/pagination.js"></script>
+  <script src="js/home-widgets.js"></script>
+</body>
+</html>

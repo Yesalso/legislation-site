@@ -1,0 +1,1909 @@
+:root {
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #fff;
+  --bg-tertiary: #fafafa;
+  --text-primary: #333;
+  --text-secondary: #666;
+  --border-color: #eee;
+  --shadow-color: rgba(0,0,0,0.1);
+  --nav-bg: #fff;
+  --nav-active: #3498db;
+  --header-bg: #2c3e50;
+  --header-text: #fff;
+  --link-color: #3498db;
+  /* 程式碼區塊配色：取自 Obsidian 筆記庫（AnuPpuccin / Catppuccin Latte）
+     --code-background = --background-secondary-alt = --ctp-crust；文字 = --text-normal */
+  --code-bg: #dce0e8;
+  --code-fg: #4c4f69;
+  --code-border: #bcc0cc;
+  --code-lang-fg: #8c8fa1;
+  --article-block-bg: #f5f5f5;
+  --article-heading-bg: #f8f9fa;
+  --history-bg: #fff;
+  --history-header-bg: #f0f4ff;
+  --table-border: #d7dde5;
+  --table-head-bg: #f2f5f9;
+  --table-stripe-bg: #fbfcfd;
+
+  /* ===== 取色自 Obsidian 筆記庫（AnuPpuccin / Catppuccin Latte）=====
+     與上方 --code-bg 同源，這裡把整組色階抽出成公共令牌，供目錄等元件復用 */
+  --ctp-mantle: #e6e9ef;
+  --ctp-crust: #dce0e8;
+  --ctp-surface0: #ccd0da;
+  --ctp-surface1: #bcc0cc;
+  --ctp-overlay0: #9ca0b0;
+  --ctp-overlay2: #7c7f93;
+  --ctp-subtext0: #6c6f85;
+  --ctp-subtext1: #5c5f77;
+  --ctp-text: #4c4f69;
+  --ctp-red: #d20f39;      --ctp-red-rgb: 210, 15, 39;
+  --ctp-mauve: #8839ef;    --ctp-mauve-rgb: 136, 57, 239;
+  --ctp-lavender: #7287fd; --ctp-lavender-rgb: 114, 135, 253;
+  --ctp-sapphire: #209fb5; --ctp-sapphire-rgb: 32, 159, 181;
+  --ctp-teal: #179299;     --ctp-teal-rgb: 23, 146, 153;
+  --ctp-overlay0-rgb: 156, 160, 176;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --bg-tertiary: #0f3460;
+  --text-primary: #e4e4e4;
+  --text-secondary: #a0a0a0;
+  --border-color: #2a2a4a;
+  --shadow-color: rgba(0,0,0,0.3);
+  --nav-bg: #16213e;
+  --nav-active: #4a9eff;
+  --header-bg: #0f3460;
+  --header-text: #e4e4e4;
+  --link-color: #4a9eff;
+  /* 程式碼區塊配色：AnuPpuccin / Catppuccin Macchiato */
+  --code-bg: #161320;
+  --code-fg: #d9e0ee;
+  --code-border: #2d2848;
+  --code-lang-fg: #6d6b7d;
+  --article-block-bg: #16213e;
+  --article-heading-bg: #0f3460;
+  --history-bg: #16213e;
+  --history-header-bg: #0f3460;
+  --table-border: #33415f;
+  --table-head-bg: #0f3460;
+  --table-stripe-bg: #1b2a4a;
+
+  /* 取色自 Obsidian 筆記庫（AnuPpuccin / Catppuccin Macchiato） */
+  --ctp-mantle: #1e2030;
+  --ctp-crust: #181926;
+  --ctp-surface0: #363a4f;
+  --ctp-surface1: #494d64;
+  --ctp-overlay0: #6e738d;
+  --ctp-overlay2: #939ab7;
+  --ctp-subtext0: #a5adcb;
+  --ctp-subtext1: #b8c0e0;
+  --ctp-text: #cad3f5;
+  --ctp-red: #ed8796;      --ctp-red-rgb: 237, 135, 150;
+  --ctp-mauve: #c6a0f6;    --ctp-mauve-rgb: 198, 160, 246;
+  --ctp-lavender: #b7bdf8; --ctp-lavender-rgb: 183, 189, 248;
+  --ctp-sapphire: #7dc4e4; --ctp-sapphire-rgb: 125, 196, 228;
+  --ctp-teal: #8bd5ca;     --ctp-teal-rgb: 139, 213, 202;
+  --ctp-overlay0-rgb: 110, 115, 141;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+header {
+  background: var(--header-bg);
+  color: var(--header-text);
+}
+
+.top-nav {
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.top-nav-item.active {
+  background: var(--nav-active);
+}
+
+.top-nav-item:hover:not(.active) {
+  background: var(--border-color);
+}
+
+.left-sidebar,
+.category-card,
+.law-item,
+.empty-state,
+.error-state {
+  background: var(--bg-secondary);
+  box-shadow: 0 1px 3px var(--shadow-color);
+}
+
+.law-item {
+  background: var(--bg-tertiary);
+}
+
+.law-link {
+  color: var(--link-color);
+}
+
+.breadcrumb-header {
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.breadcrumb {
+  color: var(--text-secondary);
+}
+
+.breadcrumb a {
+  color: var(--link-color);
+}
+
+/* 面包屑行内的返回按钮：去掉按钮外观，改为与面包屑文字一致的黑字样式（可点击返回） */
+.breadcrumb .btn-back {
+  vertical-align: middle;
+  margin-right: 0.5rem;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  color: var(--link-color);
+  font-size: inherit;
+  line-height: inherit;
+}
+.breadcrumb .btn-back:hover {
+  background: transparent;
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.law-title-top {
+  color: var(--text-primary);
+  /* 法規標題用 MingLiu */
+  font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif;
+}
+
+/* 二級（h2 / .md-h2）與六級（h6 / .md-h6）標題用 MingLiu */
+h2, h6,
+.md-heading.md-h2, .md-heading.md-h6 {
+  font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif;
+}
+
+.law-alias,
+.order-alias {
+  color: var(--text-secondary);
+}
+
+.tab-item {
+  background: var(--bg-secondary);
+  border-color: var(--link-color);
+  color: var(--text-primary);
+  /* 頁籤（瀏覽法律 / 經歷過程等）用 MingLiu */
+  font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif;
+}
+
+.tab-item.active {
+  background: var(--link-color);
+  color: var(--header-text);
+}
+
+.tab-item:hover:not(.active) {
+  background: var(--border-color);
+}
+
+.law-article-block {
+  background: var(--article-block-bg);
+}
+
+.md-heading.md-h5 {
+  background: var(--article-heading-bg);
+}
+
+.law-history-block {
+  background: var(--history-bg);
+  border-color: var(--border-color);
+}
+
+.law-history-header {
+  background: var(--history-header-bg);
+  border-bottom-color: var(--border-color);
+}
+
+.legislation-note {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+.legislation-note .note-header {
+  background: var(--bg-tertiary);
+  border-bottom-color: var(--border-color);
+}
+
+.compare-table th,
+.compare-table td {
+  border-color: var(--border-color);
+}
+
+.compare-table th {
+  background: var(--bg-tertiary);
+}
+
+.article-cell {
+  border-color: var(--border-color);
+}
+
+.version-sidebar {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+.version-item:hover {
+  background: var(--bg-tertiary);
+}
+
+.version-item.active {
+  background: var(--border-color);
+}
+
+.compare-area {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+.filter-btn {
+  background: var(--link-color);
+}
+
+.md-wiki-link {
+  color: var(--link-color);
+  border-bottom-color: var(--link-color);
+}
+
+.md-tag {
+  color: #a78bfa;
+  background: var(--bg-tertiary);
+}
+
+.law-history-detail {
+  color: var(--text-secondary);
+}
+
+.md-paragraph,
+.md-heading {
+  color: var(--text-primary);
+  /* 目錄跳轉時把標題停在閱讀線（scroll-spy 以 top≤100px 判定當前條）下方，
+     否則條文較短時會直接落進下一條，高亮看起來「跳錯一條」 */
+  scroll-margin-top: 6rem;
+}
+
+/* 圍籬程式碼區塊（```…```）：整個包裹區域都用 GenSekiGothic TW
+   樣式照 Obsidian 筆記庫（.obsidian：AnuPpuccin 主題 + monospaceFontFamily = GenSekiGothic TW）：
+   底色 --code-background（= Catppuccin crust）、圓角 4px、1px 邊框、內距 8px 12px、字級 0.875em */
+pre.md-code-block {
+  position: relative;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  font-family: 'GenSekiGothic TW', 'MingLiu', monospace;
+  font-size: 0.875em;
+  line-height: 1.55;
+  padding: 0.5em 0.75em;
+  margin: 0.7em 0;
+  border: 1px solid var(--code-border);
+  border-radius: 4px;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  overflow-x: auto;
+}
+
+/* 有指定語言（```js 等）時，右上角顯示語言標記，並讓出頂部空間 */
+pre.md-code-block[data-lang] {
+  padding-top: 1.35em;
+}
+pre.md-code-block[data-lang]::before {
+  content: attr(data-lang);
+  position: absolute;
+  top: 0.15em;
+  right: 0.55em;
+  font-size: 0.8em;
+  line-height: 1.4;
+  color: var(--code-lang-fg);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* 行內程式碼（`文字`）：與區塊同一底色與字型，Obsidian 樣式無邊框 */
+.md-inline-code {
+  font-family: 'GenSekiGothic TW', 'MingLiu', monospace;
+  font-size: 0.875em;
+  padding: 0.1em 0.3em;
+  border-radius: 4px;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  white-space: break-spaces;
+}
+
+/* 分隔線（*** / --- / ___ 單獨成行） */
+hr.md-hr {
+  border: 0;
+  border-top: 1px solid var(--table-border);
+  margin: 1.1em 0;
+}
+
+/* Markdown 表格：欄寬由 JS 依文字量算出 <col style="width:…em">，
+   表格不強行撐滿容器，超寬時在 .md-table-wrap 內橫向捲動 */
+.md-table-wrap {
+  margin: 0.7em 0;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.md-table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: max-content;
+  font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif;
+  font-size: 11pt;
+  line-height: 1.55;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+
+/* 欄數多（≥8）時縮小字級，讓長表格不至於過度換行 */
+.md-table--dense {
+  font-size: 10pt;
+}
+
+.md-table th,
+.md-table td {
+  border: 1px solid var(--table-border);
+  padding: 0.32em 0.55em;
+  vertical-align: top;
+  text-align: left;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.md-table thead th {
+  background: var(--table-head-bg);
+  font-weight: bold;
+}
+
+.md-table tbody tr:nth-child(even) td {
+  background: var(--table-stripe-bg);
+}
+
+/* 主题切换按钮样式 */
+.theme-toggle-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem !important;
+}
+
+.theme-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 50%;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--border-color);
+}
+
+.theme-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ==================== 目录导航 ====================
+   视觉语言取自 Obsidian 笔记库（AnuPpuccin / Catppuccin）：
+   · 卡片式面板：圆角 16（anp-card-radius）、20px 内距（anp-card-layout-padding）、极轻投影
+   · 缩进引导线按层级着色，对应 anp-simple-rainbow-indentation-toggle
+     （该主题用 border-color: rgba(rainbow, .5) 画层级线，颜色随深度走）
+   · 条目为圆角行：hover 用 mantle，当前项用层级色 10% 底 + 左侧 2px 色条
+   · 字号按绝对层级递减（旧写法用 em 连乘，第 4 级只剩 7px）
+   · 标题用 MingLiu（笔记库 h2 字体），层级标记色用 h3/h4 的 lavender 系
+   ================================================= */
+.toc-sidebar {
+  position: sticky;
+  top: 1rem;
+  /* 宽度随视口缩放：小屏 200px、大屏最多 264px */
+  width: clamp(200px, 20vw, 264px);
+  /* 不随 flex 拉伸到正文高度，避免只有几个条目时出现大片空白面板 */
+  align-self: flex-start;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ctp-surface1) transparent;
+  background: var(--bg-secondary);
+  border: 1px solid var(--ctp-crust);
+  border-radius: 16px;
+  padding: 1.1rem .8rem .75rem;
+  box-shadow: 0 4px 14px rgba(76, 79, 105, .07);
+  margin-left: 1rem;
+}
+
+.toc-sidebar::-webkit-scrollbar { width: 6px; }
+.toc-sidebar::-webkit-scrollbar-thumb {
+  background: var(--ctp-surface1);
+  border-radius: 3px;
+}
+.toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+
+/* 层级色板：章 → 節 → 款 → 條，取自 Catppuccin 彩虹序（mauve/lavender/sapphire/teal） */
+.toc-item.toc-h1, .toc-link.toc-h1 {
+  --toc-lv: var(--ctp-red);
+  --toc-lv-soft: rgba(var(--ctp-red-rgb), .10);
+  --toc-lv-line: rgba(var(--ctp-red-rgb), .45);
+}
+.toc-item.toc-h2, .toc-link.toc-h2 {
+  --toc-lv: var(--ctp-mauve);
+  --toc-lv-soft: rgba(var(--ctp-mauve-rgb), .10);
+  --toc-lv-line: rgba(var(--ctp-mauve-rgb), .45);
+}
+.toc-item.toc-h3, .toc-link.toc-h3 {
+  --toc-lv: var(--ctp-lavender);
+  --toc-lv-soft: rgba(var(--ctp-lavender-rgb), .12);
+  --toc-lv-line: rgba(var(--ctp-lavender-rgb), .45);
+}
+.toc-item.toc-h4, .toc-link.toc-h4 {
+  --toc-lv: var(--ctp-sapphire);
+  --toc-lv-soft: rgba(var(--ctp-sapphire-rgb), .12);
+  --toc-lv-line: rgba(var(--ctp-sapphire-rgb), .45);
+}
+.toc-item.toc-h5, .toc-link.toc-h5 {
+  --toc-lv: var(--ctp-teal);
+  --toc-lv-soft: rgba(var(--ctp-teal-rgb), .12);
+  --toc-lv-line: rgba(var(--ctp-teal-rgb), .45);
+}
+
+/* 绝对层级字号：不再用 em 连乘，深層条目不会被压到看不清 */
+.toc-item.toc-h1 { font-size: .88rem; }
+.toc-item.toc-h2 { font-size: .84rem; }
+.toc-item.toc-h3 { font-size: .81rem; }
+.toc-item.toc-h4 { font-size: .79rem; }
+.toc-item.toc-h5 { font-size: .77rem; }
+
+.toc-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  font-family: 'MingLiu', 'PMingLiU', 'GenSekiGothic TW', serif;
+  font-size: .92rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  color: var(--ctp-text);
+  margin-bottom: .55rem;
+  padding: 0 .2rem .55rem;
+  border-bottom: 1px solid var(--ctp-crust);
+}
+
+/* 一鍵收合所有層級 */
+.toc-collapse-all {
+  border: 1px solid var(--ctp-crust);
+  background: transparent;
+  color: var(--ctp-subtext0);
+  font-family: inherit;
+  font-size: .68rem;
+  font-weight: normal;
+  letter-spacing: .06em;
+  line-height: 1.5;
+  padding: .06rem .5rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color .18s ease, background .18s ease, border-color .18s ease;
+}
+.toc-collapse-all:hover:not(:disabled) {
+  color: var(--ctp-lavender);
+  background: rgba(var(--ctp-lavender-rgb), .12);
+  border-color: rgba(var(--ctp-lavender-rgb), .45);
+}
+.toc-collapse-all:disabled {
+  color: var(--ctp-overlay0);
+  cursor: default;
+}
+
+.toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toc-item {
+  margin: 1px 0;
+}
+
+/* 可折叠目录：整行是可跳转链接，左侧箭头单独负责展开／收合 */
+.toc-group > .toc-toggle {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .26rem .45rem;
+  cursor: pointer;
+  user-select: none;
+  color: var(--ctp-subtext1);
+  font-weight: 600;
+  font-size: 1em;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background .18s ease, color .18s ease;
+}
+.toc-group > .toc-toggle:hover {
+  background: var(--ctp-mantle);
+  color: var(--ctp-text);
+}
+.toc-group > .toc-toggle:focus-visible {
+  outline: 2px solid rgba(var(--ctp-lavender-rgb), .55);
+  outline-offset: -2px;
+}
+.toc-group > .toc-toggle .toc-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+/* 箭頭：獨立可點的展開鈕，滑過時給一點底以區分「這裡是收合、旁邊是跳轉」 */
+.toc-group > .toc-toggle .toc-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 1.3em;
+  height: 1.3em;
+  margin-left: -.2rem;
+  text-align: center;
+  font-size: .9em;
+  color: var(--toc-lv, var(--ctp-overlay0));
+  opacity: .85;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: transform .2s ease, color .18s ease, background .18s ease;
+}
+.toc-group > .toc-toggle .toc-arrow:hover {
+  background: rgba(var(--ctp-overlay0-rgb), .2);
+  opacity: 1;
+}
+.toc-group > .toc-toggle .toc-arrow:focus-visible {
+  outline: 2px solid rgba(var(--ctp-lavender-rgb), .6);
+  outline-offset: 1px;
+}
+.toc-group.open > .toc-toggle .toc-arrow {
+  transform: rotate(90deg);
+  opacity: 1;
+}
+.toc-group.open > .toc-toggle {
+  color: var(--ctp-text);
+}
+
+.toc-sublist {
+  list-style: none;
+  margin: .1rem 0 .15rem .34rem;
+  padding-left: .5rem;
+  /* 层级引导线：颜色继承父级 li 的 --toc-lv，深度一眼可辨 */
+  border-left: 1px solid var(--toc-lv-line, rgba(var(--ctp-overlay0-rgb), .45));
+  display: none;
+}
+.toc-group.open > .toc-sublist {
+  display: block;
+}
+
+.toc-link {
+  display: block;
+  padding: .26rem .45rem;
+  color: var(--ctp-subtext1);
+  text-decoration: none;
+  font-size: 1em;
+  border-radius: 6px;
+  transition: background .18s ease, color .18s ease, box-shadow .18s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toc-link:hover {
+  background: var(--ctp-mantle);
+  color: var(--ctp-text);
+}
+
+.toc-link:focus-visible {
+  outline: 2px solid rgba(var(--ctp-lavender-rgb), .55);
+  outline-offset: -2px;
+}
+
+/* 当前阅读位置：层级色淡底 + 左侧色条（对应 nav 的 is-active） */
+.toc-link.active {
+  background: var(--toc-lv-soft, rgba(var(--ctp-lavender-rgb), .12));
+  color: var(--toc-lv, var(--ctp-lavender));
+  font-weight: 600;
+  box-shadow: inset 2px 0 0 var(--toc-lv, var(--ctp-lavender));
+}
+
+/* 折叠状态下标记「当前所在章」 */
+.toc-group.is-current > .toc-toggle {
+  color: var(--toc-lv, var(--ctp-lavender));
+  background: var(--toc-lv-soft, rgba(var(--ctp-lavender-rgb), .12));
+}
+.toc-group.is-current > .toc-toggle .toc-arrow {
+  color: var(--toc-lv, var(--ctp-lavender));
+  opacity: 1;
+}
+
+/* 当前条文的中间层（節／款）：只染字色，不铺底色，避免一串色块 */
+.toc-group.is-context > .toc-toggle {
+  color: var(--toc-lv, var(--ctp-lavender));
+}
+.toc-group.is-context > .toc-toggle .toc-arrow {
+  color: var(--toc-lv, var(--ctp-lavender));
+  opacity: 1;
+}
+
+/* 深色主题：面板改用 surface0 描边 + 更实的投影，否则卡片边界在深底上糊掉 */
+[data-theme="dark"] .toc-sidebar {
+  border-color: var(--ctp-surface0);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .28);
+}
+[data-theme="dark"] .toc-collapse-all {
+  border-color: var(--ctp-surface0);
+  color: var(--ctp-subtext0);
+}
+[data-theme="dark"] .toc-collapse-all:hover:not(:disabled) {
+  color: var(--ctp-lavender);
+  background: rgba(var(--ctp-lavender-rgb), .18);
+  border-color: rgba(var(--ctp-lavender-rgb), .45);
+}
+[data-theme="dark"] .toc-collapse-all:disabled {
+  color: var(--ctp-overlay0);
+}
+[data-theme="dark"] .toc-group > .toc-toggle:hover,
+[data-theme="dark"] .toc-link:hover {
+  background: var(--ctp-surface0);
+}
+
+/* 详情页布局 - 带 TOC */
+.detail-layout {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+}
+
+.detail-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 移动端隐藏 TOC */
+@media (max-width: 1024px) {
+  .toc-sidebar {
+    display: none;
+  }
+  
+  .detail-layout {
+    padding: 0 0.5rem 2rem;
+  }
+}
+
+/* 移动端 TOC 切换按钮 */
+.toc-mobile-toggle {
+  display: none;
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--link-color);
+  color: var(--header-text);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 1024px) {
+  .toc-mobile-toggle {
+    display: flex;
+  }
+}
+
+
+
+
+/* ==================== Fuwari 式分页 ==================== */
+.fw-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.75rem;
+  flex-wrap: wrap;
+}
+.fw-page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  padding: 0 0.5rem;
+  border: none;
+  border-radius: 0.6rem;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-weight: bold;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+.fw-page-btn:hover:not(.disabled):not(.fw-page-active) {
+  background: var(--bg-tertiary);
+  color: var(--primary);
+}
+.fw-page-btn:active:not(.disabled):not(.fw-page-active) {
+  transform: scale(0.88);
+}
+.fw-page-btn.disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.fw-page-btn.fw-page-active {
+  background: var(--primary);
+  color: #fff;
+  cursor: default;
+}
+.fw-page-btn.fw-page-nav {
+  color: var(--primary);
+  background: var(--bg-secondary);
+}
+.fw-page-btn.fw-page-nav:hover:not(.disabled) {
+  background: var(--bg-tertiary);
+}
+.fw-page-nums {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.fw-page-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  color: var(--text-secondary);
+  font-weight: bold;
+}
+.fw-pagination-wrap {
+  margin-top: 1rem;
+}
+
+
+/* ==================== 暗色模式补充覆盖 ==================== */
+[data-theme="dark"] .sidebar-category-item.active { background: rgba(74,158,255,.18); color: #4a9eff; }
+[data-theme="dark"] .sidebar-category-item:hover:not(.active),
+[data-theme="dark"] .version-item:hover,
+[data-theme="dark"] .top-nav-item:hover:not(.active) { background: rgba(255,255,255,.06); }
+[data-theme="dark"] .sidebar-title,
+[data-theme="dark"] .category-title { color: var(--text-primary); border-bottom-color: var(--border-color); }
+[data-theme="dark"] .tab-item { background: var(--bg-secondary); border-color: #4a9eff; color: var(--text-primary); }
+[data-theme="dark"] .tab-item.active { background: #4a9eff; color: #fff; }
+[data-theme="dark"] .tab-item:hover:not(.active) { background: rgba(74,158,255,.15); }
+[data-theme="dark"] .breadcrumb-header { background: var(--bg-secondary); border-bottom-color: var(--border-color); }
+[data-theme="dark"] .breadcrumb a { color: #4a9eff; }
+[data-theme="dark"] .law-part,
+[data-theme="dark"] .law-chapter,
+[data-theme="dark"] .law-section { color: #7ab8ff; }
+[data-theme="dark"] .law-part { background: rgba(74,158,255,.10); }
+[data-theme="dark"] .law-chapter { background: rgba(74,158,255,.07); }
+[data-theme="dark"] .law-section { background: rgba(74,158,255,.05); }
+[data-theme="dark"] .law-subsection { background: rgba(74,158,255,.04); }
+[data-theme="dark"] .law-paragraph { background: transparent; }
+[data-theme="dark"] .legislation-note .note-toggle { background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color); }
+[data-theme="dark"] .version-item.active { background: rgba(74,158,255,.18); border-left-color: #4a9eff; }
+[data-theme="dark"] .version-sidebar,
+[data-theme="dark"] .compare-area { border-color: var(--border-color); }
+[data-theme="dark"] .compare-note { background: var(--bg-tertiary); }
+[data-theme="dark"] .compare-table th { background: var(--bg-tertiary); }
+[data-theme="dark"] .md-tag { background: rgba(167,139,250,.15); }
+[data-theme="dark"] .law-history-entry { border-bottom-color: var(--border-color); }
+
+/* 立法沿革折疊按鈕：GenSekiGothic TW 字體 */
+.law-history-header .note-toggle {
+  font-family: 'GenSekiGothic TW', 'Noto Sans TC', sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* ==================== 法規前言獨立區域（狀態說明 + 標籤） ==================== */
+
+.law-preamble {
+  margin: 12px 0;
+  padding: 10px 14px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-left: 4px solid #f59e0b;
+  border-radius: 6px;
+}
+
+.preamble-status {
+  font-style: italic;
+  color: #92400e;
+  font-size: 12pt;
+  line-height: 1.8;
+}
+
+.preamble-status + .preamble-status { margin-top: 2px; }
+
+.preamble-tags {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.preamble-tags .fw-badge.tag {
+  margin: 0;
+}
+
+[data-theme="dark"] .law-preamble {
+  background: rgba(245, 158, 11, .08);
+  border-color: rgba(245, 158, 11, .35);
+  border-left-color: #f59e0b;
+}
+
+[data-theme="dark"] .preamble-status { color: #fbbf24; }
+[data-theme="dark"] .filter-btn { background: #4a9eff; }
+[data-theme="dark"] .amend-btn { background: #37b24d; }
+
+/* ==================== 页面过渡动画（Fuwari 风格） ==================== */
+:root {
+  --radius-large: 1rem;
+  --content-delay: 150ms;
+  --primary: #3498db;
+}
+
+[data-theme="dark"] {
+  --primary: #4a9eff;
+}
+
+@keyframes fade-in-up {
+  0% { transform: translateY(2rem); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.onload-animation {
+  opacity: 0;
+  animation: 300ms fade-in-up;
+  animation-fill-mode: forwards;
+}
+
+header.onload-animation { animation-delay: 0ms; }
+.top-nav.onload-animation { animation-delay: 50ms; }
+.fw-nav-wrap.onload-animation { animation-delay: 0ms; }
+.fw-sidebar.onload-animation { animation-delay: 100ms; }
+.fw-banner.onload-animation { animation-delay: 120ms; }
+.fw-main.onload-animation { animation-delay: var(--content-delay); }
+#fw-post-list > *:nth-child(1) { animation-delay: calc(var(--content-delay) + 0ms); }
+#fw-post-list > *:nth-child(2) { animation-delay: calc(var(--content-delay) + 50ms); }
+#fw-post-list > *:nth-child(3) { animation-delay: calc(var(--content-delay) + 100ms); }
+#fw-post-list > *:nth-child(4) { animation-delay: calc(var(--content-delay) + 175ms); }
+#fw-post-list > *:nth-child(5) { animation-delay: calc(var(--content-delay) + 250ms); }
+#fw-post-list > *:nth-child(6) { animation-delay: calc(var(--content-delay) + 325ms); }
+#fw-post-list > *:nth-child(7) { animation-delay: calc(var(--content-delay) + 400ms); }
+#fw-post-list > *:nth-child(n+8) { animation-delay: calc(var(--content-delay) + 475ms); }
+
+/* 详情页进入动画（与列表页 onload 节奏一致：顶部先入 0ms，主内容随后 150ms 淡入上浮） */
+.breadcrumb-header.onload-animation { animation-delay: 0ms; }
+#app.onload-animation { animation-delay: var(--content-delay); }
+
+/* 统一交互过渡 */
+.top-nav-item, .tab-item, .sidebar-category-item, .version-item,
+.theme-toggle, .law-link, .toc-link, .fw-cat-pill, .fw-post-card,
+.category-card, .law-item {
+  transition: background-color .2s ease, color .2s ease, transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .onload-animation { opacity: 1; animation: none; }
+}
+
+/* ==================== 卡片式展示增强 ==================== */
+.category-card { border-radius: var(--radius-large); }
+.law-item {
+  border-radius: 8px;
+  box-shadow: 0 1px 3px var(--shadow-color);
+}
+.law-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px var(--shadow-color);
+}
+
+/* ==================== Fuwari 风格主页组件 ==================== */
+
+/* 整体布局：左侧边栏 + 主内容 */
+.fw-layout {
+  max-width: 75rem;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 17.5rem auto;
+  gap: 1rem;
+  padding: 1rem 1rem 2rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .fw-layout { grid-template-columns: 1fr; }
+}
+
+.fw-card {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-large);
+  box-shadow: 0 1px 3px var(--shadow-color);
+  overflow: hidden;
+}
+
+/* 横幅 Banner */
+.fw-banner { max-width: 75rem; margin: 1rem auto 0; padding: 0 1rem; }
+.fw-banner-inner {
+  border-radius: var(--radius-large);
+  background: linear-gradient(120deg, #2c3e50, #3498db);
+  color: #fff;
+  padding: 2.25rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+[data-theme="dark"] .fw-banner-inner { background: linear-gradient(120deg, #0f3460, #16213e); }
+.fw-banner-title { font-size: 1.5rem; font-weight: bold; margin-bottom: .4rem; position: relative; z-index: 1; }
+.fw-banner-sub { font-size: .9rem; opacity: .85; position: relative; z-index: 1; }
+.fw-banner-deco {
+  position: absolute; right: -40px; top: -40px; width: 180px; height: 180px;
+  border-radius: 50%; background: rgba(255,255,255,.08);
+}
+.fw-banner-deco:nth-child(2) { right: 60px; top: auto; bottom: -80px; width: 140px; height: 140px; background: rgba(255,255,255,.06); }
+
+/* 侧边栏 */
+.fw-sidebar { min-width: 0; }
+
+/* Profile 卡片 */
+.fw-profile { padding: .75rem; text-align: center; margin-bottom: 1rem; }
+.fw-avatar {
+  width: 76px; height: 76px; border-radius: .75rem;
+  margin: .25rem auto .75rem;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; color: #fff;
+  background: linear-gradient(135deg, #3498db, #2c3e50);
+}
+[data-theme="dark"] .fw-avatar { background: linear-gradient(135deg, #4a9eff, #0f3460); }
+.fw-name { font-weight: bold; font-size: 1.05rem; margin-bottom: .35rem; color: var(--text-primary); }
+.fw-divider { height: 4px; width: 20px; background: var(--primary); border-radius: 9999px; margin: 0 auto .5rem; }
+.fw-bio { color: var(--text-secondary); font-size: .85rem; margin-bottom: .75rem; }
+.fw-stats {
+  display: flex; justify-content: center; gap: 1.5rem;
+  padding-top: .6rem; border-top: 1px dashed var(--border-color);
+}
+.fw-stat-num { font-weight: bold; color: var(--primary); font-size: 1.05rem; }
+.fw-stat-label { font-size: .72rem; color: var(--text-secondary); }
+
+/* 小部件卡片 */
+.fw-widget { padding: 1rem; margin-bottom: 1rem; }
+.fw-widget-title {
+  font-weight: bold; margin-bottom: .75rem;
+  display: flex; align-items: center; gap: .45rem;
+  color: var(--text-primary);
+  /* 小部件標題（如「立法沿革時間線」）用 MingLiu */
+  font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif;
+}
+.fw-widget-title::before {
+  content: ''; width: 4px; height: 16px;
+  background: var(--primary); border-radius: 2px;
+}
+.fw-cats { display: flex; flex-wrap: wrap; gap: .5rem; max-height: 13rem; overflow-y: auto; }
+.fw-cat-pill {
+  display: inline-flex; align-items: center; gap: .45rem;
+  padding: .35rem .7rem; border-radius: .6rem;
+  background: var(--bg-tertiary); color: var(--text-secondary);
+  cursor: pointer; font-size: .85rem; border: none;
+}
+.fw-cat-pill:hover { background: var(--primary); color: #fff; }
+.fw-cat-pill.active { background: var(--primary); color: #fff; }
+.fw-cat-count {
+  background: rgba(0,0,0,.08); border-radius: 9999px;
+  padding: 0 .45rem; font-size: .72rem; min-width: 1.35rem; text-align: center;
+}
+[data-theme="dark"] .fw-cat-count { background: rgba(255,255,255,.12); }
+.fw-cat-pill:hover .fw-cat-count,
+.fw-cat-pill.active .fw-cat-count { background: rgba(255,255,255,.25); }
+
+/* 法规文章卡片列表 */
+.fw-main { min-width: 0; }
+#fw-post-list { display: flex; flex-direction: column; gap: 1rem; }
+.fw-post-card {
+  position: relative; padding: 1.25rem 1.5rem; cursor: pointer;
+}
+.fw-post-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px var(--shadow-color); }
+.fw-post-title {
+  font-weight: bold; font-size: 1.15rem; margin-bottom: .55rem;
+  position: relative; padding-left: .9rem;
+  color: var(--text-primary);
+}
+.fw-post-title::before {
+  content: ''; position: absolute; left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 4px; height: 1.1em;
+  background: var(--primary); border-radius: 4px;
+}
+.fw-post-card:hover .fw-post-title { color: var(--primary); }
+.fw-post-meta {
+  display: flex; flex-wrap: wrap; gap: .5rem; align-items: center;
+  margin-bottom: .55rem; font-size: .8rem; color: var(--text-secondary);
+}
+.fw-badge {
+  padding: .15rem .55rem; border-radius: 9999px;
+  background: var(--bg-tertiary); color: var(--text-secondary); font-size: .75rem;
+}
+.fw-badge.cat { background: rgba(52,152,219,.12); color: var(--primary); }
+[data-theme="dark"] .fw-badge.cat { background: rgba(74,158,255,.15); }
+.fw-badge.abolished { background: rgba(220,53,69,.1); color: #dc3545; }
+/* 日期推定：該日期係由發文字號編碼推定，非權威記載（見 tools/lib/inferred-dates.js） */
+.fw-badge.inferred { background: rgba(217,119,6,.13); color: #b45309; cursor: help; }
+[data-theme="dark"] .fw-badge.inferred { background: rgba(251,191,36,.16); color: #fbbf24; }
+.fw-badge.type { color: #2980b9; background: rgba(52,152,219,.1); }
+.fw-badge.type-law { color: #2176bd; background: rgba(52,152,219,.12); }
+.fw-badge.type-cmd { color: #6d28d9; background: rgba(124,58,237,.12); }
+.fw-badge.type-general { color: #0f766e; background: rgba(13,148,136,.12); }
+.fw-badge.status-pending { color: #b45309; background: rgba(217,119,6,.13); }
+.fw-badge.status-passed { color: #15803d; background: rgba(22,163,74,.13); }
+.fw-badge.status-rejected { color: #b91c1c; background: rgba(220,38,38,.12); }
+.fw-badge.status-abolished { color: #dc3545; background: rgba(220,53,69,.1); }
+.fw-badge.error { color: #c82333; cursor: help; background: rgba(220,53,69,.1); }
+[data-theme="dark"] .fw-badge.type-law { background: rgba(74,158,255,.15); }
+[data-theme="dark"] .fw-badge.type-cmd { background: rgba(167,139,250,.16); }
+[data-theme="dark"] .fw-badge.type-general { background: rgba(45,212,191,.15); }
+[data-theme="dark"] .fw-badge.status-pending { background: rgba(251,191,36,.14); }
+[data-theme="dark"] .fw-badge.status-passed { background: rgba(52,211,153,.15); }
+[data-theme="dark"] .fw-badge.status-rejected { background: rgba(248,113,113,.15); }
+.fw-post-desc {
+  color: var(--text-secondary); font-size: .9rem; margin-bottom: .6rem;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.fw-post-footer {
+  font-size: .78rem; color: var(--text-secondary); opacity: .75;
+  display: flex; gap: 1rem; flex-wrap: wrap;
+}
+.fw-read-more { color: var(--primary); font-weight: 600; }
+
+/* 空状态 / 加载中 */
+.fw-empty {
+  text-align: center; padding: 3rem 1rem;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-large);
+}
+
+/* 移动端响应式补充 */
+@media (max-width: 768px) {
+  header { padding: .7rem; }
+  .logo { font-size: 1.15rem; }
+  .top-nav { padding: 0 .5rem; }
+  .top-nav-list {
+    justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .top-nav-list::-webkit-scrollbar { display: none; }
+  .top-nav-item { padding: .45rem .7rem; font-size: .9rem; }
+  .breadcrumb-container { width: 94% !important; }
+  #app { width: 94% !important; }
+  .law-title-top { font-size: 22px !important; }
+  .tabs-container { overflow-x: auto; }
+  .tab-item { white-space: nowrap; flex-shrink: 0; font-size: 13px; padding: 7px 12px; }
+  .main-container { gap: 1rem; margin-top: 1rem; }
+  .fw-layout { padding: .6rem .6rem 1.5rem; gap: .8rem; }
+  .fw-banner { padding: 0 .6rem; margin-top: .6rem; }
+  .fw-banner-inner { padding: 1.4rem 1.2rem; }
+  .fw-banner-title { font-size: 1.15rem; }
+  .fw-post-card { padding: 1rem 1.1rem; }
+  .fw-post-title { font-size: 1.02rem; }
+}
+
+/* 移动端 TOC 抽屉展开态 */
+@media (max-width: 1024px) {
+  .toc-sidebar.open {
+    display: block;
+    position: fixed;
+    right: 4.5rem;
+    bottom: 1rem;
+    width: min(300px, 78vw);
+    max-height: 65vh;
+    z-index: 120;
+    box-shadow: 0 8px 24px var(--shadow-color);
+  }
+}
+
+/* ==================== Fuwari 风格顶部导航栏 ==================== */
+.fw-nav-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg-primary);
+}
+
+.fw-navbar {
+  position: relative;
+  max-width: 75rem;
+  margin: 0 auto;
+  height: 4.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  border-radius: 0 0 var(--radius-large) var(--radius-large);
+  overflow: visible;  /* 允许搜索栏下拉浮层溢出到 navbar 外部 */
+}
+
+.fw-site-title {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-weight: bold;
+  font-size: 1.05rem;
+  color: var(--primary);
+  text-decoration: none;
+  padding: .6rem 1.1rem;
+  border-radius: .6rem;
+  white-space: nowrap;
+}
+.fw-site-title:hover { background: var(--bg-tertiary); }
+
+.fw-nav-links {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+.fw-nav-links a {
+  display: flex;
+  align-items: center;
+  height: 2.75rem;
+  padding: 0 1.1rem;
+  border-radius: .6rem;
+  font-weight: bold;
+  font-size: .95rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.fw-nav-links a:hover { background: var(--bg-tertiary); color: var(--primary); }
+.fw-nav-links a.active { color: var(--primary); }
+
+.fw-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+
+.fw-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: none;
+  border-radius: .6rem;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.fw-icon-btn:hover { background: var(--bg-tertiary); color: var(--primary); }
+.fw-icon-btn:active { transform: scale(.92); }
+
+/* 浮动面板（移动端菜单） */
+.float-panel {
+  position: absolute;
+  top: calc(100% + .5rem);
+  right: .75rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-large);
+  box-shadow: 0 8px 24px var(--shadow-color);
+  z-index: 60;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.float-panel-closed {
+  opacity: 0;
+  transform: translateY(-.5rem);
+  pointer-events: none;
+}
+
+.fw-mobile-menu {
+  display: none;
+  flex-direction: column;
+  min-width: 11rem;
+  padding: .4rem;
+}
+.fw-mobile-menu a {
+  padding: .65rem 1rem;
+  border-radius: .5rem;
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-weight: bold;
+  font-size: .92rem;
+}
+.fw-mobile-menu a:hover { background: var(--bg-tertiary); color: var(--primary); }
+.fw-mobile-menu a.active { color: var(--primary); }
+
+/* ==================== 文章卡片元信息（Fuwari PostMeta） ==================== */
+.meta-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: .45rem;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  margin-right: .15rem;
+}
+
+.with-divider { position: relative; }
+.with-divider::before {
+  content: '/';
+  margin: 0 .45rem;
+  color: var(--text-secondary);
+  opacity: .5;
+}
+
+.fw-badge.tag {
+  background: rgba(52,152,219,.10);
+  color: var(--primary);
+}
+[data-theme="dark"] .fw-badge.tag { background: rgba(74,158,255,.14); }
+
+.fw-tag-pill.active { background: var(--primary); color: #fff; }
+
+.fw-post-footer {
+  display: flex;
+  gap: .8rem;
+  font-size: .8rem;
+  color: var(--text-secondary);
+  opacity: .65;
+  margin-bottom: .35rem;
+}
+
+.fw-read-more {
+  display: inline-block;
+  font-size: .88rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.fw-post-card:hover .fw-read-more { color: var(--primary); }
+
+/* ==================== 草稿卡片（React 草稿版樣式） ==================== */
+.draft-item-link {
+  color: inherit;
+  text-decoration: none;
+  transition: transform .15s, box-shadow .15s;
+  display: block;
+}
+.draft-item-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+.draft-item-link:hover .fw-post-title { color: var(--primary); }
+.draft-open-hint {
+  color: var(--text-secondary);
+  margin-left: .5rem;
+  font-size: 12px;
+}
+
+.draft-detail-meta {
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .75rem;
+  margin-top: .5rem;
+  font-size: 13px;
+  display: flex;
+}
+.draft-detail-id {
+  color: var(--text-secondary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* 导航栏响应式：窄屏隐藏链接，显示汉堡菜单 */
+@media (max-width: 900px) {
+  .fw-nav-links { display: none; }
+  .fw-menu-btn { display: flex; }
+  .fw-mobile-menu { display: flex; }
+}
+@media (min-width: 901px) {
+  .fw-menu-btn { display: none; }
+}
+
+/* ==================== 詳情頁標籤視圖 ==================== */
+
+/* 非「瀏覽法律」标签页：目錄只隱藏繪製、保留欄寬，
+   避免切換標籤時正文寬度 794 → 1169px 的橫向跳動 */
+body[data-tab]:not([data-tab="content"]) .toc-sidebar {
+  visibility: hidden;
+  box-shadow: none;
+}
+
+.tab-view { animation: fade-in-up .3s ease both; }
+
+/* 條文比較工具控件 */
+.tool-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+.tool-controls label {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .9rem;
+  color: var(--text-secondary);
+}
+
+/* ==================== 立法歷程歸檔頁（仿 Fuwari ArchivePanel） ==================== */
+
+.ar-panel {
+  padding: 1.5rem 2rem;
+}
+
+.ar-heading {
+  font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0 0 1rem;
+  color: var(--text-primary);
+}
+
+/* 法規 / 命令 分區標題 */
+.ar-section-title {
+  font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 1.5rem 0 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--primary);
+  color: var(--text-primary);
+  display: inline-block;
+}
+.ar-section-title:first-of-type { margin-top: 0; }
+
+.ar-group { margin-bottom: .35rem; }
+
+/* 年份列：年份 + 時間軸圓環 + 筆數（年份不換行，避免被擠成直排） */
+.ar-group-header {
+  display: flex;
+  align-items: center;
+  min-height: 3.5rem;
+}
+
+.ar-year {
+  flex: 0 0 9rem;
+  text-align: right;
+  padding-right: .9rem;
+  font-size: 1.55rem;
+  font-weight: bold;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.ar-header-dot {
+  flex: 0 0 3rem;
+  display: flex;
+  justify-content: center;
+}
+
+.ar-header-dot::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  outline: 3px solid var(--primary);
+  outline-offset: -2px;
+  background: transparent;
+}
+
+.ar-count { flex: 1; color: var(--text-secondary); font-size: .92rem; }
+
+/* 單列：日期 / 時間軸節點 / 內容 / 右側分類 */
+.ar-row {
+  display: flex;
+  align-items: center;
+  min-height: 3.1rem;
+  width: 100%;
+  border-radius: .5rem;
+  text-decoration: none;
+  transition: background-color .25s;
+}
+
+.ar-row:hover { background: var(--btn-hover-bg, rgba(0,0,0,.04)); }
+
+.ar-date {
+  flex: 0 0 9rem;
+  text-align: right;
+  padding-right: .9rem;
+  font-size: .85rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.ar-line {
+  flex: 0 0 3rem;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.ar-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: 2px dashed var(--border-color);
+}
+
+.ar-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--primary);
+  outline: 4px solid var(--bg-secondary);
+  z-index: 1;
+  transition: height .25s, width .25s;
+}
+
+.ar-row:hover .ar-dot { height: 18px; width: 5px; }
+
+.ar-main {
+  flex: 1;
+  min-width: 0;
+  padding: .45rem .75rem .45rem 0;
+  /* 立法沿革內容用 MingLiu */
+  font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif;
+}
+
+.ar-title {
+  font-weight: bold;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: transform .25s, color .25s;
+}
+
+.ar-row:hover .ar-title { transform: translateX(4px); color: var(--primary); }
+
+.ar-body {
+  font-size: .85rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: .15rem;
+}
+
+.ar-event { color: var(--text-secondary); }
+.ar-event-sub {
+  display: block;
+  margin-top: .15rem;
+  padding-left: 1rem;
+  color: var(--text-tertiary, var(--text-secondary));
+  opacity: .9;
+}
+.ar-noevent { opacity: .65; font-style: italic; }
+
+/* 詳情頁「經歷過程」：沿革文字較長 → 允許換行、不截斷 */
+.ar-row.ar-wrap { align-items: flex-start; }
+.ar-row.ar-wrap .ar-main { padding-top: .5rem; padding-bottom: .5rem; }
+.ar-row.ar-wrap .ar-title,
+.ar-row.ar-wrap .ar-body { white-space: normal; overflow: visible; text-overflow: clip; }
+
+.ar-sub .ar-title { font-weight: normal; font-size: .92rem; }
+.ar-sub .ar-dot { background: var(--text-secondary); opacity: .55; }
+
+.ar-cat {
+  flex: 0 0 8.5rem;
+  text-align: right;
+  padding-right: .25rem;
+  font-size: .8rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 900px) {
+  .ar-panel { padding: 1rem 1.1rem; }
+  .ar-year { flex-basis: 5.6rem; font-size: 1.1rem; padding-right: .6rem; }
+  .ar-date { flex-basis: 4.6rem; font-size: .78rem; padding-right: .5rem; }
+  .ar-line { flex-basis: 2.2rem; }
+  .ar-cat { display: none; }
+}
+
+
+
+.ar-panel {
+  padding: 1.5rem 2rem;
+}
+
+.ar-heading {
+  font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0 0 1rem;
+  color: var(--text-primary);
+}
+
+/* 法規 / 命令 分區標題 */
+.ar-section-title {
+  font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 1.5rem 0 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--primary);
+  color: var(--text-primary);
+  display: inline-block;
+}
+.ar-section-title:first-of-type { margin-top: 0; }
+
+.ar-group { margin-bottom: .5rem; }
+
+.ar-group-header {
+  display: flex;
+  align-items: center;
+  height: 3.75rem;
+}
+
+.ar-year {
+  width: 15%;
+  text-align: right;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--text-secondary);
+  padding-right: .75rem;
+}
+
+.ar-header-dot {
+  width: 10%;
+  display: flex;
+  justify-content: center;
+}
+
+.ar-header-dot::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  outline: 3px solid var(--primary);
+  outline-offset: -2px;
+  background: transparent;
+}
+
+.ar-count {
+  width: 75%;
+  color: var(--text-secondary);
+  font-size: .95rem;
+}
+
+.ar-row {
+  display: flex;
+  align-items: center;
+  min-height: 3.2rem;
+  width: 100%;
+  border-radius: .5rem;
+  text-decoration: none;
+  transition: background-color .25s;
+}
+
+.ar-row:hover { background: var(--btn-hover-bg, rgba(0,0,0,.04)); }
+
+.ar-date {
+  width: 15%;
+  text-align: right;
+  font-size: .85rem;
+  color: var(--text-secondary);
+  padding-right: .75rem;
+  flex-shrink: 0;
+}
+
+.ar-line {
+  width: 10%;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.ar-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: 2px dashed var(--border-color);
+}
+
+.ar-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--primary);
+  outline: 4px solid var(--card-bg, #fff);
+  z-index: 1;
+  transition: height .25s, width .25s;
+}
+
+.ar-row:hover .ar-dot { height: 18px; width: 5px; }
+
+.ar-main {
+  flex: 1;
+  min-width: 0;
+  padding: .45rem .75rem .45rem 0;
+}
+
+.ar-title {
+  font-weight: bold;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: transform .25s, color .25s;
+}
+
+.ar-row:hover .ar-title {
+  transform: translateX(4px);
+  color: var(--primary);
+}
+
+.ar-body {
+  font-size: .85rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: .15rem;
+}
+
+.ar-event { color: var(--text-secondary); }
+.ar-event-sub {
+  display: block;
+  margin-top: 0.15rem;
+  padding-left: 1rem;
+  color: var(--text-tertiary, var(--text-secondary));
+  opacity: .9;
+}
+.ar-noevent { opacity: .65; font-style: italic; }
+
+.ar-sub .ar-title { font-weight: normal; font-size: .92rem; }
+.ar-sub .ar-dot { background: var(--text-secondary); opacity: .55; }
+
+.ar-cat {
+  width: 14%;
+  flex-shrink: 0;
+  text-align: left;
+  font-size: .8rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+  .ar-panel { padding: 1rem 1.1rem; }
+  .ar-year { width: 20%; font-size: 1.15rem; }
+  .ar-cat { display: none; }
+  .ar-line { width: 8%; }
+}
+
+/* ==================== Fuwari 风格全站搜索栏 ==================== */
+.fw-search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 2.75rem;
+  margin-right: .35rem;
+  border-radius: .7rem;
+  background: rgba(0,0,0,.04);
+  transition: background-color .18s ease, box-shadow .18s ease, width .2s ease;
+}
+.fw-search-bar:hover { background: rgba(0,0,0,.06); }
+.fw-search-bar:focus-within { background: rgba(0,0,0,.06); }
+[data-theme="dark"] .fw-search-bar { background: rgba(255,255,255,.05); }
+[data-theme="dark"] .fw-search-bar:hover,
+[data-theme="dark"] .fw-search-bar:focus-within { background: rgba(255,255,255,.1); }
+
+.fw-search-icon {
+  pointer-events: none;
+  margin-left: .8rem;
+  color: var(--text-secondary);
+  opacity: .6;
+  flex-shrink: 0;
+  transition: color .18s ease;
+}
+.fw-search-bar:focus-within .fw-search-icon { color: var(--primary); opacity: 1; }
+
+.fw-search-input {
+  width: 9.5rem;
+  height: 100%;
+  padding: 0 .8rem 0 .55rem;
+  background: transparent;
+  border: none;
+  outline: 0;
+  font-size: .88rem;
+  color: var(--text-primary);
+  transition: width .2s ease;
+}
+.fw-search-input::placeholder { color: var(--text-secondary); opacity: .55; }
+.fw-search-input:focus { width: 13.5rem; }
+@media (max-width: 1100px) {
+  .fw-search-input { width: 7.5rem; }
+  .fw-search-input:focus { width: 10rem; }
+}
+
+/* 下拉浮层：从搜索栏正下方右侧展开，圆角阴影悬浮在内容上方 */
+.fw-search-bar .search-dropdown {
+  position: absolute;
+  top: calc(100% + .5rem);
+  right: 0;
+  width: min(26rem, 80vw);
+  max-height: min(72vh, 30rem);
+  overflow-y: auto;
+  border-radius: .9rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 12px 32px rgba(0,0,0,.16), 0 3px 8px rgba(0,0,0,.08);
+  z-index: 70;
+  padding: .45rem;
+  opacity: 0;
+  transform: translateY(-.4rem) scale(.985);
+  transform-origin: top right;
+  transition: opacity .18s ease, transform .18s ease;
+  pointer-events: none;
+}
+.fw-search-bar .search-dropdown.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.fw-search-bar .search-dropdown::-webkit-scrollbar { width: 6px; }
+.fw-search-bar .search-dropdown::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 9999px;
+}
+
+.fw-search-status {
+  padding: .3rem .65rem .4rem;
+  font-size: .72rem;
+  color: var(--text-secondary);
+  border-bottom: 1px dashed var(--border-color);
+  margin-bottom: .3rem;
+}
+
+.fw-search-results { display: flex; flex-direction: column; gap: .15rem; }
+
+/* 候选卡片 */
+.fw-search-result {
+  display: block;
+  padding: .55rem .7rem;
+  border-radius: .6rem;
+  text-decoration: none;
+  transition: background-color .15s ease;
+}
+.fw-search-result:hover { background: var(--bg-tertiary); }
+
+.fw-search-result-head {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.fw-search-title {
+  flex: 1;
+  min-width: 0;
+  font-weight: bold;
+  font-size: .95rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color .15s ease;
+}
+.fw-search-result:hover .fw-search-title { color: var(--primary); }
+
+/* 右侧 chevron ›：hover 位移变亮 */
+.fw-search-chevron {
+  flex-shrink: 0;
+  color: var(--primary);
+  font-size: 1.05rem;
+  line-height: 1;
+  opacity: .45;
+  transform: translateX(0);
+  transition: transform .16s ease, opacity .16s ease;
+}
+.fw-search-result:hover .fw-search-chevron {
+  transform: translateX(.3rem);
+  opacity: 1;
+}
+
+/* 分类徽章 */
+.fw-search-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem;
+  align-items: center;
+  margin-top: .32rem;
+}
+.fw-search-badge {
+  padding: 0 .5rem;
+  border-radius: 9999px;
+  font-size: .68rem;
+  line-height: 1.55;
+  background: rgba(52,152,219,.12);
+  color: var(--primary);
+}
+.fw-search-badge.cat { background: var(--bg-tertiary); color: var(--text-secondary); }
+.fw-search-badge.abolished { background: rgba(220,53,69,.1); color: #dc3545; }
+[data-theme="dark"] .fw-search-badge { background: rgba(74,158,255,.18); }
+[data-theme="dark"] .fw-search-badge.cat { background: rgba(255,255,255,.08); }
+[data-theme="dark"] .fw-search-badge.abolished { background: rgba(220,53,69,.18); }
+
+/* excerpt 预览（最多两行） */
+.fw-search-excerpt {
+  margin-top: .28rem;
+  font-size: .78rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 关键词高亮：无底色、主题色加粗（fuwari 风格） */
+.fw-search-bar mark,
+.fw-search-result mark {
+  background: transparent;
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.fw-search-empty {
+  padding: 1.1rem .75rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: .85rem;
+}
+
+/* 移动端：搜索栏隐藏，保留汉堡菜单 */
+@media (max-width: 900px) {
+  .fw-search-bar { display: none; }
+}
+
+/* 沿革行數字（令號／條號／條數）：暗色主題下改用可讀的淺藍 */
+[data-theme="dark"] .lh-num { color: #6fb3ff; }
