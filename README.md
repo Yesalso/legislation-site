@@ -61,6 +61,18 @@ cd site && python -m http.server 3900   # 打開 http://127.0.0.1:3900/
 - 法規日期採**熙明曆**：西元 = 熙明年 + 2013。
 - 法規正文用細明體；標題用無襯線粗體。
 
+## 首次部署必須做的一步
+
+到 **Settings → Pages → Build and deployment → Source**，把下拉選單改成 **GitHub Actions**。
+
+這一步無法由工作流代勞：預設的 `GITHUB_TOKEN` 沒有建立 Pages 站點的權限，
+`configure-pages` 若帶 `enablement: true` 會以
+`Resource not accessible by integration` 失敗。改完設定後，
+到 **Actions → Deploy to GitHub Pages → Re-run all jobs**（或再 push 一次即可）。
+
+成功後網址為 `https://<owner>.github.io/<repo>/`，也可在 Settings → Pages 頂部看到
+`Your site is live at …`。
+
 ## 授權
 
 僅覆蓋本倉庫內的程式碼。
