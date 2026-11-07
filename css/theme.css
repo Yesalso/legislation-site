@@ -1,29 +1,56 @@
+/* ==================== 網頁字體（手機端同款字體） ====================
+   Big5 字面子集化為 woff2（約 14k 字），手機無本機字體時下載；
+   桌面優先用 local() 本機安裝的字體，不重複下載。 */
+@font-face {
+  font-family: 'MingLiu';
+  src: local('MingLiU'), local('細明體'), local('MingLiU_HKSCS'),
+       url('fonts/mingliu-subset.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2010-2027, U+2100-214F, U+2460-24FF,
+                 U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FF00-FFEF;
+}
+/* 註：GenSekiGothic TW 僅有 Bold/Heavy 字重檔，若註冊為網頁字體，
+   400 字重（正文）也會落到粗體字面，全站觀感會變粗——故桌面端原本
+   就未命中該字體（系列名為 …TW B/H），這裡一律不註冊，正文統一 MingLiu。 */
+
 :root {
-  --bg-primary: #f8f9fa;
-  --bg-secondary: #fff;
-  --bg-tertiary: #fafafa;
-  --text-primary: #333;
-  --text-secondary: #666;
-  --border-color: #eee;
-  --shadow-color: rgba(0,0,0,0.1);
+  /* ===== Fuwari 式 oklch 色板：由 --hue 驅動的明暗雙模式 =====
+     --hue 取自站點主色 #3498db 的 oklch 色相（242.7），保持現有藍色調。
+     結構對齊 fuwariAAA src/styles/variables.styl：
+     page-bg / card-bg / btn-regular 三檔 / deep-text / line-color */
+  --hue: 242.7;
+  color-scheme: light;
+
+  --bg-primary: oklch(0.95 0.01 var(--hue));            /* page-bg */
+  --bg-secondary: #fff;                                  /* card-bg */
+  --bg-tertiary: oklch(0.95 0.025 var(--hue));           /* btn-regular-bg */
+  --btn-hover-bg: oklch(0.90 0.05 var(--hue));           /* btn-regular-bg-hover */
+  --btn-content: oklch(0.55 0.12 var(--hue));
+  --text-primary: oklch(0.28 0.02 var(--hue));           /* deep-text */
+  --text-secondary: oklch(0.50 0.02 var(--hue));
+  --border-color: oklch(0.28 0.02 var(--hue) / 0.12);    /* line-color */
+  --shadow-color: rgba(0,0,0,0.08);
   --nav-bg: #fff;
-  --nav-active: #3498db;
-  --header-bg: #2c3e50;
+  --nav-active: oklch(0.653 0.135 var(--hue));           /* ＝ #3498db */
+  --header-bg: oklch(0.36 0.04 calc(var(--hue) + 6));    /* ≈ #2c3e50 */
   --header-text: #fff;
-  --link-color: #3498db;
+  --link-color: var(--nav-active);
+  --primary: var(--nav-active);
   /* 程式碼區塊配色：取自 Obsidian 筆記庫（AnuPpuccin / Catppuccin Latte）
      --code-background = --background-secondary-alt = --ctp-crust；文字 = --text-normal */
   --code-bg: #dce0e8;
   --code-fg: #4c4f69;
   --code-border: #bcc0cc;
   --code-lang-fg: #8c8fa1;
-  --article-block-bg: #f5f5f5;
-  --article-heading-bg: #f8f9fa;
+  --article-block-bg: oklch(0.965 0.008 var(--hue));
+  --article-heading-bg: oklch(0.945 0.015 var(--hue));
   --history-bg: #fff;
-  --history-header-bg: #f0f4ff;
-  --table-border: #d7dde5;
-  --table-head-bg: #f2f5f9;
-  --table-stripe-bg: #fbfcfd;
+  --history-header-bg: oklch(0.94 0.025 var(--hue));
+  --table-border: oklch(0.28 0.02 var(--hue) / 0.15);
+  --table-head-bg: oklch(0.945 0.02 var(--hue));
+  --table-stripe-bg: oklch(0.975 0.007 var(--hue));
 
   /* ===== 取色自 Obsidian 筆記庫（AnuPpuccin / Catppuccin Latte）=====
      與上方 --code-bg 同源，這裡把整組色階抽出成公共令牌，供目錄等元件復用 */
@@ -45,30 +72,34 @@
 }
 
 [data-theme="dark"] {
-  --bg-primary: #1a1a2e;
-  --bg-secondary: #16213e;
-  --bg-tertiary: #0f3460;
-  --text-primary: #e4e4e4;
-  --text-secondary: #a0a0a0;
-  --border-color: #2a2a4a;
-  --shadow-color: rgba(0,0,0,0.3);
-  --nav-bg: #16213e;
-  --nav-active: #4a9eff;
-  --header-bg: #0f3460;
-  --header-text: #e4e4e4;
-  --link-color: #4a9eff;
+  color-scheme: dark;
+  --bg-primary: oklch(0.16 0.014 var(--hue));
+  --bg-secondary: oklch(0.23 0.015 var(--hue));
+  --bg-tertiary: oklch(0.33 0.035 var(--hue));
+  --btn-hover-bg: oklch(0.38 0.04 var(--hue));
+  --btn-content: oklch(0.75 0.1 var(--hue));
+  --text-primary: oklch(0.93 0.01 var(--hue));
+  --text-secondary: oklch(0.72 0.02 var(--hue));
+  --border-color: oklch(0.93 0.01 var(--hue) / 0.1);
+  --shadow-color: rgba(0,0,0,0.35);
+  --nav-bg: oklch(0.23 0.015 var(--hue));
+  --nav-active: oklch(0.75 0.14 var(--hue));
+  --header-bg: oklch(0.20 0.02 var(--hue));
+  --header-text: oklch(0.93 0.01 var(--hue));
+  --link-color: var(--nav-active);
+  --primary: var(--nav-active);
   /* 程式碼區塊配色：AnuPpuccin / Catppuccin Macchiato */
   --code-bg: #161320;
   --code-fg: #d9e0ee;
   --code-border: #2d2848;
   --code-lang-fg: #6d6b7d;
-  --article-block-bg: #16213e;
-  --article-heading-bg: #0f3460;
-  --history-bg: #16213e;
-  --history-header-bg: #0f3460;
-  --table-border: #33415f;
-  --table-head-bg: #0f3460;
-  --table-stripe-bg: #1b2a4a;
+  --article-block-bg: oklch(0.27 0.025 var(--hue));
+  --article-heading-bg: oklch(0.32 0.035 var(--hue));
+  --history-bg: oklch(0.23 0.015 var(--hue));
+  --history-header-bg: oklch(0.32 0.035 var(--hue));
+  --table-border: oklch(0.93 0.01 var(--hue) / 0.16);
+  --table-head-bg: oklch(0.30 0.03 var(--hue));
+  --table-stripe-bg: oklch(0.26 0.02 var(--hue));
 
   /* 取色自 Obsidian 筆記庫（AnuPpuccin / Catppuccin Macchiato） */
   --ctp-mantle: #1e2030;
@@ -93,6 +124,9 @@ body {
   color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+/* 標題文字色走令牌（style.css 的 #222 在暗色下不可讀） */
+h1, h2, h3, h4 { color: var(--text-primary); }
 
 header {
   background: var(--header-bg);
@@ -792,27 +826,27 @@ hr.md-hr {
 
 
 /* ==================== 暗色模式补充覆盖 ==================== */
-[data-theme="dark"] .sidebar-category-item.active { background: rgba(74,158,255,.18); color: #4a9eff; }
+[data-theme="dark"] .sidebar-category-item.active { background: color-mix(in oklab, var(--primary) 18%, transparent); color: var(--primary); }
 [data-theme="dark"] .sidebar-category-item:hover:not(.active),
 [data-theme="dark"] .version-item:hover,
 [data-theme="dark"] .top-nav-item:hover:not(.active) { background: rgba(255,255,255,.06); }
 [data-theme="dark"] .sidebar-title,
 [data-theme="dark"] .category-title { color: var(--text-primary); border-bottom-color: var(--border-color); }
-[data-theme="dark"] .tab-item { background: var(--bg-secondary); border-color: #4a9eff; color: var(--text-primary); }
-[data-theme="dark"] .tab-item.active { background: #4a9eff; color: #fff; }
-[data-theme="dark"] .tab-item:hover:not(.active) { background: rgba(74,158,255,.15); }
+[data-theme="dark"] .tab-item { background: var(--bg-secondary); border-color: var(--primary); color: var(--text-primary); }
+[data-theme="dark"] .tab-item.active { background: var(--primary); color: #fff; }
+[data-theme="dark"] .tab-item:hover:not(.active) { background: color-mix(in oklab, var(--primary) 15%, transparent); }
 [data-theme="dark"] .breadcrumb-header { background: var(--bg-secondary); border-bottom-color: var(--border-color); }
-[data-theme="dark"] .breadcrumb a { color: #4a9eff; }
+[data-theme="dark"] .breadcrumb a { color: var(--primary); }
 [data-theme="dark"] .law-part,
 [data-theme="dark"] .law-chapter,
-[data-theme="dark"] .law-section { color: #7ab8ff; }
-[data-theme="dark"] .law-part { background: rgba(74,158,255,.10); }
-[data-theme="dark"] .law-chapter { background: rgba(74,158,255,.07); }
-[data-theme="dark"] .law-section { background: rgba(74,158,255,.05); }
-[data-theme="dark"] .law-subsection { background: rgba(74,158,255,.04); }
+[data-theme="dark"] .law-section { color: oklch(0.80 0.09 var(--hue)); }
+[data-theme="dark"] .law-part { background: color-mix(in oklab, var(--primary) 10%, transparent); }
+[data-theme="dark"] .law-chapter { background: color-mix(in oklab, var(--primary) 7%, transparent); }
+[data-theme="dark"] .law-section { background: color-mix(in oklab, var(--primary) 5%, transparent); }
+[data-theme="dark"] .law-subsection { background: color-mix(in oklab, var(--primary) 4%, transparent); }
 [data-theme="dark"] .law-paragraph { background: transparent; }
 [data-theme="dark"] .legislation-note .note-toggle { background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color); }
-[data-theme="dark"] .version-item.active { background: rgba(74,158,255,.18); border-left-color: #4a9eff; }
+[data-theme="dark"] .version-item.active { background: color-mix(in oklab, var(--primary) 18%, transparent); border-left-color: var(--primary); }
 [data-theme="dark"] .version-sidebar,
 [data-theme="dark"] .compare-area { border-color: var(--border-color); }
 [data-theme="dark"] .compare-note { background: var(--bg-tertiary); }
@@ -865,18 +899,13 @@ hr.md-hr {
 }
 
 [data-theme="dark"] .preamble-status { color: #fbbf24; }
-[data-theme="dark"] .filter-btn { background: #4a9eff; }
+[data-theme="dark"] .filter-btn { background: var(--primary); }
 [data-theme="dark"] .amend-btn { background: #37b24d; }
 
 /* ==================== 页面过渡动画（Fuwari 风格） ==================== */
 :root {
   --radius-large: 1rem;
   --content-delay: 150ms;
-  --primary: #3498db;
-}
-
-[data-theme="dark"] {
-  --primary: #4a9eff;
 }
 
 @keyframes fade-in-up {
@@ -965,13 +994,13 @@ header.onload-animation { animation-delay: 0ms; }
 .fw-banner { max-width: 75rem; margin: 1rem auto 0; padding: 0 1rem; }
 .fw-banner-inner {
   border-radius: var(--radius-large);
-  background: linear-gradient(120deg, #2c3e50, #3498db);
+  background: linear-gradient(120deg, oklch(0.40 0.09 var(--hue)), oklch(0.62 0.15 var(--hue)));
   color: #fff;
   padding: 2.25rem 2rem;
   position: relative;
   overflow: hidden;
 }
-[data-theme="dark"] .fw-banner-inner { background: linear-gradient(120deg, #0f3460, #16213e); }
+[data-theme="dark"] .fw-banner-inner { background: linear-gradient(120deg, oklch(0.30 0.06 var(--hue)), oklch(0.21 0.035 var(--hue))); }
 .fw-banner-title { font-size: 1.5rem; font-weight: bold; margin-bottom: .4rem; position: relative; z-index: 1; }
 .fw-banner-sub { font-size: .9rem; opacity: .85; position: relative; z-index: 1; }
 .fw-banner-deco {
@@ -990,9 +1019,9 @@ header.onload-animation { animation-delay: 0ms; }
   margin: .25rem auto .75rem;
   display: flex; align-items: center; justify-content: center;
   font-size: 2rem; color: #fff;
-  background: linear-gradient(135deg, #3498db, #2c3e50);
+  background: linear-gradient(135deg, oklch(0.653 0.135 var(--hue)), oklch(0.40 0.09 var(--hue)));
 }
-[data-theme="dark"] .fw-avatar { background: linear-gradient(135deg, #4a9eff, #0f3460); }
+[data-theme="dark"] .fw-avatar { background: linear-gradient(135deg, var(--primary), oklch(0.30 0.06 var(--hue))); }
 .fw-name { font-weight: bold; font-size: 1.05rem; margin-bottom: .35rem; color: var(--text-primary); }
 .fw-divider { height: 4px; width: 20px; background: var(--primary); border-radius: 9999px; margin: 0 auto .5rem; }
 .fw-bio { color: var(--text-secondary); font-size: .85rem; margin-bottom: .75rem; }
@@ -1061,7 +1090,7 @@ header.onload-animation { animation-delay: 0ms; }
   background: var(--bg-tertiary); color: var(--text-secondary); font-size: .75rem;
 }
 .fw-badge.cat { background: rgba(52,152,219,.12); color: var(--primary); }
-[data-theme="dark"] .fw-badge.cat { background: rgba(74,158,255,.15); }
+[data-theme="dark"] .fw-badge.cat { background: color-mix(in oklab, var(--primary) 15%, transparent); }
 .fw-badge.abolished { background: rgba(220,53,69,.1); color: #dc3545; }
 /* 日期推定：該日期係由發文字號編碼推定，非權威記載（見 tools/lib/inferred-dates.js） */
 .fw-badge.inferred { background: rgba(217,119,6,.13); color: #b45309; cursor: help; }
@@ -1075,7 +1104,7 @@ header.onload-animation { animation-delay: 0ms; }
 .fw-badge.status-rejected { color: #b91c1c; background: rgba(220,38,38,.12); }
 .fw-badge.status-abolished { color: #dc3545; background: rgba(220,53,69,.1); }
 .fw-badge.error { color: #c82333; cursor: help; background: rgba(220,53,69,.1); }
-[data-theme="dark"] .fw-badge.type-law { background: rgba(74,158,255,.15); }
+[data-theme="dark"] .fw-badge.type-law { background: color-mix(in oklab, var(--primary) 15%, transparent); }
 [data-theme="dark"] .fw-badge.type-cmd { background: rgba(167,139,250,.16); }
 [data-theme="dark"] .fw-badge.type-general { background: rgba(45,212,191,.15); }
 [data-theme="dark"] .fw-badge.status-pending { background: rgba(251,191,36,.14); }
@@ -1274,7 +1303,7 @@ header.onload-animation { animation-delay: 0ms; }
   background: rgba(52,152,219,.10);
   color: var(--primary);
 }
-[data-theme="dark"] .fw-badge.tag { background: rgba(74,158,255,.14); }
+[data-theme="dark"] .fw-badge.tag { background: color-mix(in oklab, var(--primary) 14%, transparent); }
 
 .fw-tag-pill.active { background: var(--primary); color: #fff; }
 
@@ -1869,7 +1898,7 @@ body[data-tab]:not([data-tab="content"]) .toc-sidebar {
 }
 .fw-search-badge.cat { background: var(--bg-tertiary); color: var(--text-secondary); }
 .fw-search-badge.abolished { background: rgba(220,53,69,.1); color: #dc3545; }
-[data-theme="dark"] .fw-search-badge { background: rgba(74,158,255,.18); }
+[data-theme="dark"] .fw-search-badge { background: color-mix(in oklab, var(--primary) 18%, transparent); }
 [data-theme="dark"] .fw-search-badge.cat { background: rgba(255,255,255,.08); }
 [data-theme="dark"] .fw-search-badge.abolished { background: rgba(220,53,69,.18); }
 

@@ -83,6 +83,10 @@
 
   // 注入切换按钮到导航栏
   function injectToggleButton() {
+    // 建立當前主題的圖標（建立時 DOM 還沒有按鈕，先記下主題，注入後補繪圖標）
+    const current = document.documentElement.getAttribute('data-theme') || LIGHT;
+    let injected = false;
+
     const fwActions = document.querySelector('.fw-nav-actions');
     if (fwActions && !fwActions.querySelector('.theme-toggle')) {
       const menuBtn = document.getElementById('nav-menu-switch');
@@ -92,17 +96,21 @@
       } else {
         fwActions.appendChild(btn);
       }
-      return;
+      injected = true;
     }
 
     const nav = document.querySelector('.top-nav-list');
-    if (nav && !nav.querySelector('.theme-toggle')) {
+    if (!injected && nav && !nav.querySelector('.theme-toggle')) {
       const btn = createToggleButton();
       const li = document.createElement('li');
       li.className = 'top-nav-item theme-toggle-item';
       li.appendChild(btn);
       nav.appendChild(li);
+      injected = true;
     }
+
+    // 按鈕已進 DOM，補上圖標與 aria 標籤
+    if (injected) updateToggleButton(current);
   }
 
   // 暴露全局方法

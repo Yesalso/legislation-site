@@ -198,7 +198,12 @@ window.LawCompare = {
       const inner = modified
         ? this.getCharDiffHtml(this.lineKind(pl).text, this.lineKind(tl).text, type)
         : this.escapeHtml(this.lineKind(check).text);
-      const bg = (modified && check.trim()) ? (type === 'prev' ? '#fef0f0' : '#f0fdf4') : '';
+      // 高亮底色跟隨主題：以語義色混入卡片底色，暗色下同樣可讀
+      const bg = (modified && check.trim())
+        ? (type === 'prev'
+          ? 'color-mix(in oklab, var(--ctp-red) 16%, var(--bg-secondary))'
+          : 'color-mix(in oklab, #22c55e 16%, var(--bg-secondary))')
+        : '';
       out.push(this.formatLine(check, inner, indent, bg));
     }
     return out.join('');

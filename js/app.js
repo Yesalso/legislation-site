@@ -80,11 +80,11 @@ function scrollToArticle(event, articleId) {
   var target = document.getElementById(articleId);
   if (target) {
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    // 高亮显示目标条文
+    // 高亮显示目标条文（高亮色跟隨主題色相，暗色下不會殘留淺色塊）
     target.style.transition = 'background-color 0.5s';
-    target.style.backgroundColor = '#fff3cd';
+    target.style.backgroundColor = 'color-mix(in oklab, var(--primary) 22%, var(--article-heading-bg))';
     setTimeout(function() {
-      target.style.backgroundColor = '#f8f9fa';
+      target.style.backgroundColor = 'var(--article-heading-bg)';
     }, 2000);
   }
 }
@@ -772,7 +772,7 @@ function parseMarkdown(text, opts) {
         inArticleBlock = true;
         var artId = extractArticleId(content);
         var idAttr = artId ? ' id="art-' + artId + '"' : '';
-        articleContent += '<div class="md-heading md-h5"' + idAttr + ' style="' + mdHeadingStyle(5) + ';padding:4px;background:#f8f9fa">' + renderInlineMd(content) + '</div>';
+        articleContent += '<div class="md-heading md-h5"' + idAttr + ' style="' + mdHeadingStyle(5) + ';padding:4px;background:var(--article-heading-bg)">' + renderInlineMd(content) + '</div>';
       } else {
         if (inArticleBlock) {
           html += '<div class="law-article-block">' + articleContent + '</div>';
@@ -987,7 +987,7 @@ async function initDetailPage() {
 // 資料源分兩類，交互不同：
 //   ① atomic 法規（有版本級事件，帶整版條文快照）→ 點擊沿革條目 = 切換到該版本條文；
 //   ② Vault 法規（僅正文「立法沿革」文字，無逐版快照）→ 條文連結點擊 = 跳轉/高亮現行版。
-// 兩者呈現同一套樣式，向「立法沿革」的正式呈現格式對齊。
+// 兩者呈現同一套樣式，向「熙明十三年度政務委員會總預算施行條例」的沿革呈現對齊。
 
 var _atomicView = { lawId: null, originalHtml: null };
 

@@ -39,7 +39,10 @@ const PAGES = [
   'regulations', 'tw', 'draft_detail', 'order_detail', 'amendment'
 ].map((n) => n + '.html');
 
-const INJECT = '<script src="js/static-api.js"></script>';
+// 字體預載：手機端無本機 MingLiu，提前搶先下載，避免正文先以系統字體閃現
+const FONT_PRELOAD =
+  '<link rel="preload" href="css/fonts/mingliu-subset.woff2" as="font" type="font/woff2" crossorigin>';
+const INJECT = FONT_PRELOAD + '\n  <script src="js/static-api.js"></script>';
 
 /**
  * 空数据快照 —— 结构与 server.js 各函数在「数据目录不存在」时的早返回一致。
