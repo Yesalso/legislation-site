@@ -39,9 +39,11 @@ const PAGES = [
   'regulations', 'tw', 'draft_detail', 'order_detail', 'amendment'
 ].map((n) => n + '.html');
 
-// 字體已依 unicode-range 分塊（見 theme.css），由瀏覽器按用字自行抓取，
-// 不再 preload 單一大檔（2.3MB 單檔在手機網路常下載中斷，導致整頁回退系統字）。
-const INJECT = '<script src="js/static-api.js"></script>';
+// 首屏字體：只 preload 最小的高頻字分塊（約 80–100KB，由 tools/build-fonts.py 依
+// 詞頻生成）；其餘分塊由瀏覽器按 unicode-range 按需抓取，不再 preload 大檔。
+const FONT_PRELOAD =
+  '<link rel="preload" href="css/fonts/mingliu-00.woff2" as="font" type="font/woff2" crossorigin>';
+const INJECT = FONT_PRELOAD + '\n  <script src="js/static-api.js"></script>';
 
 /**
  * 空数据快照 —— 结构与 server.js 各函数在「数据目录不存在」时的早返回一致。

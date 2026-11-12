@@ -1,9 +1,26 @@
 {
-  "name": "law-system-site",
-  "version": "1.0.0",
-  "private": true,
-  "description": "法規查詢系統靜態站：真實資料快照 + 純 HTML/CSS/JS，無框架、無建置依賴",
+  "name": "law-system",
+  "version": "2.1.0",
+  "description": "法規查詢系統：以命令為唯一輸入，重放推導法規正文與版本",
   "scripts": {
-    "export": "node tools/export-static.js --data=static-data"
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "node tools/export-static.js --data=static-data",
+    "build:empty": "node tools/export-static.js",
+    "fonts": "python tools/build-fonts.py",
+    "snapshot": "node tools/export-snapshot.js",
+    "publish": "python tools/build-fonts.py && node tools/export-snapshot.js && node tools/export-static.js --data=static-data",
+    "serve:site": "node tools/serve-site.js",
+    "test": "node tests/run.js",
+    "test:data": "node tests/run.js --data",
+    "test:all": "node tests/run.js --data --verbose",
+    "test:list": "node tests/run.js --list",
+    "test:unit": "node tests/run.js --only=articles --only=tags --only=dates",
+    "test:self": "node tools/lib/self-test.js",
+    "scan": "node tools/scan-documents.js",
+    "diff": "node tools/diff-docs-vs-library.js"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3"
   }
 }
