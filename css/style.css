@@ -1,9 +1,9 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  /* 一律以 MingLiu 為主；不再把 GenSekiGothic TW 排在前面——它只有 Bold/Heavy
-     字重，且只要裝置裝了它就會整個站變成粗黑體（本機已可重現）。 */
-  font-family: "MingLiu", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+  /* MingLiu 為主；缺字或載入失敗時用 GenSekiGothic TW（網頁字體，正常情況不會下載），
+     最後才輪到系統字。 */
+  font-family: "MingLiu", "GenSekiGothic TW", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
   line-height: 1.8;
   color: #333;
   background: #f8f9fa;
