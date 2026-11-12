@@ -1,6 +1,15 @@
 /* ==================== 網頁字體（手機端同款字體） ====================
-   Big5 字面子集化為 woff2（約 14k 字），手機無本機字體時下載；
-   桌面優先用 local() 本機安裝的字體，不重複下載。 */
+   Big5 字面子集（約 14k 字），手機無本機字體時下載；桌面優先用 local()
+   本機安裝的字體，不重複下載。
+
+   注意：這份 woff2 必須是「關掉 hinting 也長得正確」的字型。
+   舊檔（2026-11）其實是未壓縮 TTF 改名成 .woff2，而且它的 CJK 外框要
+   靠 TrueType bytecode（hinting）才會被擺到正確位置——Chrome/FreeType
+   會跑 bytecode 所以正常，iOS Safari（CoreText）不跑 bytecode，就直接畫出
+   錯位、互相重疊的筆畫（手機版整頁中文糊成一團）。現在的字型已把各字符的
+   正確外框固化、攤平複合字符並移除 bytecode／無效表（vhea 無 vmtx 等），
+   在任何引擎下都不再依賴 hinting。換字型時請確認新檔在不跑 hinting 的
+   環境（例如 iOS 實機）也能正確顯示。 */
 @font-face {
   font-family: 'MingLiu';
   src: local('MingLiU'), local('細明體'), local('MingLiU_HKSCS'),
