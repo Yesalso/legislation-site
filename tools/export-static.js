@@ -41,9 +41,21 @@ const PAGES = [
 
 // 首屏字體：只 preload 最小的高頻字分塊（約 80–100KB，由 tools/build-fonts.py 依
 // 詞頻生成）；其餘分塊由瀏覽器按 unicode-range 按需抓取，不再 preload 大檔。
-const FONT_PRELOAD =
-  '<link rel="preload" href="css/fonts/mingliu-00.woff2" as="font" type="font/woff2" crossorigin>';
-const INJECT = FONT_PRELOAD + '\n  <script src="js/static-api.js"></script>';
+// 法規詳情類頁面另外 preload genseki-00，因為頁面頂部的法規標題立即要用 GenSeki。
+// URL 的 ?v=… 由 build-fonts.py 依內容雜湊寫入，preload 必須用同一個 URL，
+// 否則瀏覽器會當成兩個檔案而重複下載。
+const THEME_CSS = fs.readFileSync(path.join(ROOT, 'css', 'theme.css'), 'utf8');
+function fontHref(name) {
+  const m = THEME_CSS.match(new RegExp("url\\('(fonts/" + name + "\\.woff2[^']*)'\\)"));
+  return 'css/' + (m ? m[1] : 'fonts/' + name + '.woff2');
+}
+function fontPreload(name) {
+  return '<link rel="preload" href="' + fontHref(name) +
+    '" as="font" type="font/woff2" crossorigin>';
+}
+const DOC_PAGES = new Set([
+  'detail.html', 'order_detail.html', 'draft_detail.html', 'amendment.html'
+]);
 
 /**
  * 空数据快照 —— 结构与 server.js 各函数在「数据目录不存在」时的早返回一致。
@@ -132,7 +144,10 @@ function main() {
     if (html.includes('static-api.js')) {
       throw new Error(`${file}：已包含 static-api.js 引用，請確認是否重複注入了注入邏輯`);
     }
-    html = html.replace(/<head([^>]*)>/i, `<head$1>\n  ${INJECT}`);
+    const inject = [fontPreload('mingliu-00')];
+    if (DOC_PAGES.has(file)) inject.push(fontPreload('genseki-00'));
+    inject.push('<script src="js/static-api.js"></script>');
+    html = html.replace(/<head([^>]*)>/i, `<head$1>\n  ${inject.join('\n  ')}`);
     fs.writeFileSync(path.join(SITE, file), html, 'utf8');
     injected++;
   }

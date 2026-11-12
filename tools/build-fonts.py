@@ -8,9 +8,11 @@
   * 本站內容是固定的靜態快照，實際用字約三千出頭；依「詞頻」分塊，
     最常用的一塊很小且會 preload，首屏中文最快變成細明體。
   * 兩個字族：
-      MingLiu           正版 PMingLiU（細明體）
-      GenSekiGothic TW  源石黑體 Bold，只當 MingLiu 缺字／載入失敗時的後備，
-                        正常情況不會下載（unicode-range + 字族次序）。
+      MingLiu           正版 PMingLiU（細明體）＝正文、章名、節名、款名
+      GenSekiGothic TW  源石黑體 Bold＝法規標題、條名、程式碼；
+                        以 local() 優先使用本機安裝的 B/H 字面，沒有才下載。
+      GenSeki 只有 Bold 靜態字面，故每個分塊同時宣告 normal 與 bold，
+      避免 Safari 對「靜態字型 + 字重範圍」的匹配差異導致 400 字重被跳過。
 
 輸入：
   tools/font-src/mingliu-full.woff2   已去 hinting 的 PMingLiU（Big5 超集）
@@ -25,6 +27,7 @@
 
 用法：python tools/build-fonts.py
 """
+import hashlib
 import sys
 from collections import Counter
 from pathlib import Path
@@ -36,9 +39,27 @@ ROOT = Path(__file__).resolve().parent.parent
 FONT_DIR = ROOT / "css" / "fonts"
 THEME = ROOT / "css" / "theme.css"
 FAMILIES = [
-    # (檔名前綴, CSS 字族名, 來源檔, font-weight 描述)
-    ("mingliu", "MingLiu", ROOT / "tools" / "font-src" / "mingliu-full.woff2", "normal"),
-    ("genseki", "GenSekiGothic TW", ROOT / "tools" / "font-src" / "genseki-full.woff2", "400 700"),
+    # 前綴、CSS 字族名、來源檔、要宣告的字重、local() 別名、額外剝離的表
+    # GenSeki 只有 Bold 靜態字面，因此同一個檔案同時宣告 normal / bold：
+    # Safari（CoreText）對靜態字型 + `font-weight: 400 700` 範圍的匹配較保守，
+    # 拆成兩個明確字重可避免 400 字重被跳過、退回 MingLiu。
+    {
+        "prefix": "mingliu",
+        "family": "MingLiu",
+        "src": ROOT / "tools" / "font-src" / "mingliu-full.woff2",
+        "weights": ["normal"],
+        "locals": [],
+        "strip": [],
+    },
+    {
+        "prefix": "genseki",
+        "family": "GenSekiGothic TW",
+        "src": ROOT / "tools" / "font-src" / "genseki-full.woff2",
+        "weights": ["normal", "bold"],
+        "locals": ["GenSekiGothic TW B", "GenSekiGothic TW H"],
+        # BASE/gasp 對純文字渲染沒有作用，去掉可降低 CoreText 解碼風險
+        "strip": ["BASE", "gasp"],
+    },
 ]
 
 # 這些字元一定要有（ASCII + 中文排版常用標點），即使內容裡沒出現
@@ -94,8 +115,8 @@ def ranges_str(cps):
     return ", ".join(out)
 
 
-def build_chunk(group, prefix, family, weight, cps, src_font):
-    f = TTFont(str(src_font))
+def build_chunk(group, spec, cps):
+    f = TTFont(str(spec["src"]))
     cmap = f.getBestCmap() or {}
     have = [cp for cp in cps if cp in cmap]
     if not have:
@@ -104,22 +125,38 @@ def build_chunk(group, prefix, family, weight, cps, src_font):
     opts = subset.Options()
     opts.flavor = "woff2"
     opts.layout_features = ["*"]
+    opts.recalc_bounds = True
+    opts.recalc_timestamp = False
     sub = subset.Subsetter(options=opts)
     sub.populate(unicodes=have)
     sub.subset(f)
+    for tag in spec["strip"]:
+        if tag in f:
+            del f[tag]
     f.flavor = "woff2"
-    name = "%s-%s.woff2" % (prefix, group)
+    name = "%s-%s.woff2" % (spec["prefix"], group)
     path = FONT_DIR / name
     f.save(str(path))
     size = path.stat().st_size
-    print("  %-20s %5d 字  %7.1f KB" % (name, len(have), size / 1024.0))
-    return {"family": family, "weight": weight, "path": name, "cps": have, "size": size}
+    # 內容雜湊放在 URL 查詢字串：Safari 會快取「解碼失敗」的字體，
+    # 檔名不變時即使重新部署也可能繼續用舊的快取；換 hash 可強制重抓。
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()[:8]
+    print("  %-20s %5d 字  %7.1f KB  v=%s" % (name, len(have), size / 1024.0, digest))
+    return {
+        "family": spec["family"],
+        "weights": spec["weights"],
+        "locals": spec["locals"],
+        "path": name,
+        "ver": digest,
+        "cps": have,
+        "size": size,
+    }
 
 
 def main():
-    for _, _, src, _ in FAMILIES:
-        if not src.exists():
-            sys.exit("找不到來源字體：%s（先跑 tools/make-font-sources.py）" % src)
+    for spec in FAMILIES:
+        if not spec["src"].exists():
+            sys.exit("找不到來源字體：%s（先跑 tools/make-font-sources.py）" % spec["src"])
 
     freq = collect_text()
     for ch in EXTRA:
@@ -145,8 +182,8 @@ def main():
     for name, cps in groups:
         if not cps:
             continue
-        for prefix, family, src, weight in FAMILIES:
-            c = build_chunk(name, prefix, family, weight, cps, src)
+        for spec in FAMILIES:
+            c = build_chunk(name, spec, cps)
             if c:
                 chunks.append(c)
 
@@ -165,16 +202,21 @@ def main():
 
     blocks = []
     for c in chunks:
-        blocks.append(
-            "@font-face {\n"
-            "  font-family: '%s';\n"
-            "  src: url('fonts/%s') format('woff2');\n"
-            "  font-weight: %s;\n"
-            "  font-style: normal;\n"
-            "  font-display: swap;\n"
-            "  unicode-range: %s;\n"
-            "}" % (c["family"], c["path"], c["weight"], ranges_str(c["cps"]))
+        src = ", ".join(
+            ["local('%s')" % n for n in c["locals"]]
+            + ["url('fonts/%s?v=%s') format('woff2')" % (c["path"], c["ver"])]
         )
+        for weight in c["weights"]:
+            blocks.append(
+                "@font-face {\n"
+                "  font-family: '%s';\n"
+                "  src: %s;\n"
+                "  font-weight: %s;\n"
+                "  font-style: normal;\n"
+                "  font-display: swap;\n"
+                "  unicode-range: %s;\n"
+                "}" % (c["family"], src, weight, ranges_str(c["cps"]))
+            )
     start = css.index("/* FONTFACE:START")
     start = css.index("\n", start) + 1
     end = css.index("/* FONTFACE:END */")
@@ -186,7 +228,7 @@ def main():
     covered = set()
     for c in chunks:
         covered.update(c["cps"])
-    print("MingLiu 分塊合計 %.1f KB；GenSeki 後備合計 %.1f KB" % (
+    print("MingLiu 分塊合計 %.1f KB；GenSeki 分塊合計 %.1f KB" % (
         sum(c["size"] for c in ming) / 1024.0, sum(c["size"] for c in gen) / 1024.0))
     print("覆蓋 %d/%d 字（缺 %d）" % (len(covered & set(all_cps)), len(all_cps),
                                      len(set(all_cps) - covered)))

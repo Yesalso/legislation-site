@@ -1,12 +1,12 @@
 const MD_HEADINGS = {
-  1: { font: 'GenSekiGothic TW', size: '18pt' },
-  // 二級標題（##）用 MingLiu
-  2: { font: 'MingLiu', size: '15pt' },
-  3: { font: 'GenSekiGothic TW', size: '13.5pt' },
-  4: { font: 'GenSekiGothic TW', size: '13.5pt' },
-  5: { font: 'GenSekiGothic TW', size: '12pt' },
+  1: { family: "'GenSekiGothic TW', 'GenSekiGothic TW B', 'GenSekiGothic TW H', 'MingLiu', sans-serif", size: '18pt' },
+  // 二級標題（## 章名）用 MingLiu
+  2: { family: "'MingLiu', sans-serif", size: '15pt' },
+  3: { family: "'GenSekiGothic TW', 'GenSekiGothic TW B', 'GenSekiGothic TW H', 'MingLiu', sans-serif", size: '13.5pt' },
+  4: { family: "'GenSekiGothic TW', 'GenSekiGothic TW B', 'GenSekiGothic TW H', 'MingLiu', sans-serif", size: '13.5pt' },
+  5: { family: "'GenSekiGothic TW', 'GenSekiGothic TW B', 'GenSekiGothic TW H', 'MingLiu', sans-serif", size: '12pt' },
   // 六級標題（######）用 MingLiu
-  6: { font: 'MingLiu', size: '12pt' }
+  6: { family: "'MingLiu', sans-serif", size: '12pt' }
 };
 
 // 分隔線：*** / --- / ___（字元之間可有空白，至少三個）單獨成行即為 <hr>
@@ -17,11 +17,21 @@ function mdHeadingStyle(level) {
   var cfg = MD_HEADINGS[level] || MD_HEADINGS[6];
   // 五級＝條文標題，上下留白收窄；其餘章節標題保留較大段距
   var margin = level === 5 ? '0.2em 0 0.12em' : '0.9em 0 0.35em';
-  return "font-family:'" + cfg.font + "';font-size:" + cfg.size + ';font-weight:bold;margin:' + margin;
+  return 'font-family:' + cfg.family + ';font-size:' + cfg.size + ';font-weight:bold;margin:' + margin;
 }
 
 function mdParagraphStyle() {
   return "font-family:'MingLiu';font-size:12pt;line-height:1.8;margin:0.18em 0";
+}
+
+// 條文與標題是 fetch 後才由 JS 插入 DOM 的。Safari 對動態節點有時不會
+// 主動觸發 webfont 下載，因此在渲染後明確要求一次字體載入；失敗也無妨，
+// CSS 的 fallback（GenSekiGothic TW B/H → MingLiu）仍可正常顯示。
+function ensureDocFonts() {
+  if (!document.fonts || typeof document.fonts.load !== 'function') return;
+  var sample = '法規條文第條立法目的';
+  document.fonts.load('12pt "MingLiu"', sample).catch(function () {});
+  document.fonts.load('bold 12pt "GenSekiGothic TW"', sample).catch(function () {});
 }
 
 // 標題行相鄰的空行在渲染時折疊：標題本身已有邊距，空行只會造成大片留白
@@ -946,6 +956,7 @@ async function initDetailPage() {
     if (titleEl) titleEl.textContent = law.title;
     var contentEl = document.getElementById('law-content');
     if (contentEl) contentEl.innerHTML = parseLawContent(content, notes);
+    ensureDocFonts();
 
     var breadcrumb = document.getElementById('law-name-breadcrumb');
     if (breadcrumb) breadcrumb.textContent = law.title;
@@ -1196,6 +1207,7 @@ async function viewAtomicVersion(date, label) {
     var data = await res.json();
     if (!data.ok) throw new Error(data.error || '載入失敗');
     contentEl.innerHTML = renderAtomicArticles(data.articles);
+    ensureDocFonts();
     var bar = document.getElementById('version-view-bar');
     var lab = document.getElementById('viewing-version-label');
     if (lab) lab.textContent = '正在瀏覽：' + label + ' 版本（' + data.article_count + ' 條）';
@@ -1211,6 +1223,7 @@ function backToCurrentVersion() {
   var contentEl = document.getElementById('law-content');
   var bar = document.getElementById('version-view-bar');
   if (contentEl && _atomicView.originalHtml != null) contentEl.innerHTML = _atomicView.originalHtml;
+  ensureDocFonts();
   if (bar) bar.style.display = 'none';
 }
 
