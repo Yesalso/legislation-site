@@ -1,12 +1,12 @@
 const MD_HEADINGS = {
-  1: { family: "'GenSekiGothic TW', 'GenSekiGothic TW B', 'GenSekiGothic TW H', 'MingLiu', sans-serif", size: '18pt' },
+  1: { family: "'GenSekiGothic TW', 'GenSekiGothic TW B', 'GenSekiGothic TW H', 'MingLiu'", size: '18pt' },
   // 二級標題（## 章名）用 MingLiu
-  2: { family: "'MingLiu', sans-serif", size: '15pt' },
-  3: { family: "'GenSekiGothic TW', 'GenSekiGothic TW B', 'GenSekiGothic TW H', 'MingLiu', sans-serif", size: '13.5pt' },
-  4: { family: "'GenSekiGothic TW', 'GenSekiGothic TW B', 'GenSekiGothic TW H', 'MingLiu', sans-serif", size: '13.5pt' },
-  5: { family: "'GenSekiGothic TW', 'GenSekiGothic TW B', 'GenSekiGothic TW H', 'MingLiu', sans-serif", size: '12pt' },
+  2: { family: "'MingLiu'", size: '15pt' },
+  3: { family: "'GenSekiGothic TW', 'GenSekiGothic TW B', 'GenSekiGothic TW H', 'MingLiu'", size: '13.5pt' },
+  4: { family: "'GenSekiGothic TW', 'GenSekiGothic TW B', 'GenSekiGothic TW H', 'MingLiu'", size: '13.5pt' },
+  5: { family: "'GenSekiGothic TW', 'GenSekiGothic TW B', 'GenSekiGothic TW H', 'MingLiu'", size: '12pt' },
   // 六級標題（######）用 MingLiu
-  6: { family: "'MingLiu', sans-serif", size: '12pt' }
+  6: { family: "'MingLiu'", size: '12pt' }
 };
 
 // 分隔線：*** / --- / ___（字元之間可有空白，至少三個）單獨成行即為 <hr>

@@ -119,6 +119,13 @@
    「GenSekiGothic TW B / H」；都沒有時才下載 genseki-* 分塊。正文仍以
    MingLiu 為主，只有法規標題、條名與程式碼使用 GenSeki。 */
 
+/* 全站只使用 MingLiu 與 GenSekiGothic TW 兩種字體。
+   code/kbd/samp/pre 的瀏覽器預設是 monospace，若不覆蓋，首頁「構建信息」
+   的路徑等位置就會被系統字體補字／補位；這裡統一改用 GenSeki。 */
+code, kbd, samp, pre {
+  font-family: 'GenSekiGothic TW', 'MingLiu';
+}
+
 :root {
   /* ===== Fuwari 式 oklch 色板：由 --hue 驅動的明暗雙模式 =====
      --hue 取自站點主色 #3498db 的 oklch 色相（242.7），保持現有藍色調。
@@ -304,13 +311,13 @@ header {
   /* 法規標題用 GenSekiGothic TW（立法議事條例：標題＝GenSekiGothic TW B）；
      後面的本機 B/H 字面與 MingLiu 是 Safari 找不到網頁字體時的保險。 */
   font-family: 'GenSekiGothic TW', 'GenSekiGothic TW B', 'GenSekiGothic TW H',
-               'MingLiu', sans-serif;
+               'MingLiu';
 }
 
 /* 二級（h2 / .md-h2）與六級（h6 / .md-h6）標題用 MingLiu */
 h2, h6,
 .md-heading.md-h2, .md-heading.md-h6 {
-  font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif;
+  font-family: 'MingLiu', 'GenSekiGothic TW';
 }
 
 .law-alias,
@@ -323,7 +330,7 @@ h2, h6,
   border-color: var(--link-color);
   color: var(--text-primary);
   /* 頁籤（瀏覽法律 / 經歷過程等）用 MingLiu */
-  font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif;
+  font-family: 'MingLiu', 'GenSekiGothic TW';
 }
 
 .tab-item.active {
@@ -428,7 +435,7 @@ pre.md-code-block {
   background: var(--code-bg);
   color: var(--code-fg);
   font-family: 'GenSekiGothic TW', 'GenSekiGothic TW B', 'GenSekiGothic TW H',
-               'MingLiu', monospace;
+               'MingLiu';
   font-size: 0.875em;
   line-height: 1.55;
   padding: 0.5em 0.75em;
@@ -459,7 +466,7 @@ pre.md-code-block[data-lang]::before {
 /* 行內程式碼（`文字`）：與區塊同一底色與字型，Obsidian 樣式無邊框 */
 .md-inline-code {
   font-family: 'GenSekiGothic TW', 'GenSekiGothic TW B', 'GenSekiGothic TW H',
-               'MingLiu', monospace;
+               'MingLiu';
   font-size: 0.875em;
   padding: 0.1em 0.3em;
   border-radius: 4px;
@@ -488,7 +495,7 @@ hr.md-hr {
   border-collapse: collapse;
   table-layout: fixed;
   width: max-content;
-  font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif;
+  font-family: 'MingLiu', 'GenSekiGothic TW';
   font-size: 11pt;
   line-height: 1.55;
   color: var(--text-primary);
@@ -624,7 +631,7 @@ hr.md-hr {
   align-items: center;
   justify-content: space-between;
   gap: .5rem;
-  font-family: 'MingLiu', 'PMingLiU', 'GenSekiGothic TW', serif;
+  font-family: 'MingLiu', 'GenSekiGothic TW';
   font-size: .92rem;
   font-weight: 700;
   letter-spacing: .14em;
@@ -965,7 +972,7 @@ hr.md-hr {
 /* 立法沿革折疊按鈕：GenSekiGothic TW 字體 */
 .law-history-header .note-toggle {
   font-family: 'GenSekiGothic TW', 'GenSekiGothic TW B', 'GenSekiGothic TW H',
-               'MingLiu', sans-serif;
+               'MingLiu';
   font-size: 12px;
   font-weight: bold;
 }
@@ -1148,7 +1155,7 @@ header.onload-animation { animation-delay: 0ms; }
   display: flex; align-items: center; gap: .45rem;
   color: var(--text-primary);
   /* 小部件標題（如「立法沿革時間線」）用 MingLiu */
-  font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif;
+  font-family: 'MingLiu', 'GenSekiGothic TW';
 }
 .fw-widget-title::before {
   content: ''; width: 4px; height: 16px;
@@ -1462,7 +1469,7 @@ header.onload-animation { animation-delay: 0ms; }
 }
 .draft-detail-id {
   color: var(--text-secondary);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: 'GenSekiGothic TW', 'MingLiu';
 }
 
 /* 导航栏响应式：窄屏隐藏链接，显示汉堡菜单 */
@@ -1509,7 +1516,7 @@ body[data-tab]:not([data-tab="content"]) .toc-sidebar {
 }
 
 .ar-heading {
-  font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif;
+  font-family: 'MingLiu', 'GenSekiGothic TW';
   font-size: 1.5rem;
   font-weight: bold;
   margin: 0 0 1rem;
@@ -1518,7 +1525,7 @@ body[data-tab]:not([data-tab="content"]) .toc-sidebar {
 
 /* 法規 / 命令 分區標題 */
 .ar-section-title {
-  font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif;
+  font-family: 'MingLiu', 'GenSekiGothic TW';
   font-size: 1.1rem;
   font-weight: bold;
   margin: 1.5rem 0 0.75rem;
@@ -1622,7 +1629,7 @@ body[data-tab]:not([data-tab="content"]) .toc-sidebar {
   min-width: 0;
   padding: .45rem .75rem .45rem 0;
   /* 立法沿革內容用 MingLiu */
-  font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif;
+  font-family: 'MingLiu', 'GenSekiGothic TW';
 }
 
 .ar-title {
@@ -1690,7 +1697,7 @@ body[data-tab]:not([data-tab="content"]) .toc-sidebar {
 }
 
 .ar-heading {
-  font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif;
+  font-family: 'MingLiu', 'GenSekiGothic TW';
   font-size: 1.5rem;
   font-weight: bold;
   margin: 0 0 1rem;
@@ -1699,7 +1706,7 @@ body[data-tab]:not([data-tab="content"]) .toc-sidebar {
 
 /* 法規 / 命令 分區標題 */
 .ar-section-title {
-  font-family: 'MingLiu', 'GenSekiGothic TW', sans-serif;
+  font-family: 'MingLiu', 'GenSekiGothic TW';
   font-size: 1.1rem;
   font-weight: bold;
   margin: 1.5rem 0 0.75rem;

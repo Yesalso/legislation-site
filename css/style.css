@@ -1,9 +1,9 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  /* MingLiu 為主；缺字或載入失敗時用 GenSekiGothic TW（網頁字體，正常情況不會下載），
-     最後才輪到系統字。 */
-  font-family: "MingLiu", "GenSekiGothic TW", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+  /* 全站只使用 MingLiu 與 GenSekiGothic TW 兩種字體；缺字時由 GenSeki 接手，
+     不再指定 Microsoft JhengHei / Noto Sans TC / sans-serif 等系統字。 */
+  font-family: "MingLiu", "GenSekiGothic TW";
   line-height: 1.8;
   color: #333;
   background: #f8f9fa;
@@ -304,10 +304,10 @@ strong { font-weight: 800; font-size: 19px; }
 .law-history-content,
 .law-history-entry,
 .law-history-detail {
-  font-family: "MingLiU", "PMingLiU", "細明體", "新細明體", serif;
+  font-family: "MingLiu", "GenSekiGothic TW";
 }
 .lh-num {
-  font-family: "Times New Roman", "Liberation Serif", serif;
+  font-family: "GenSekiGothic TW", "MingLiu";
   font-weight: 400;        /* 數字不加粗：以字重正常呈現 */
   font-size: 1.1em;        /* 改用「大一碼」的字號取得辨識度，而非加粗 */
   line-height: inherit;
