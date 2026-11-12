@@ -36,7 +36,8 @@ const DATA = argData ? path.resolve(ROOT, argData.slice('--data='.length)) : nul
 // 对外发布的页面（test.html 是调试页，不发布）
 const PAGES = [
   'index', 'detail', 'archive', 'drafts', 'orders', 'meetings',
-  'regulations', 'tw', 'draft_detail', 'order_detail', 'amendment'
+  'regulations', 'tw', 'draft_detail', 'order_detail', 'amendment',
+  'fonttest' // TEMP: Safari 字體診斷頁，診斷完刪除
 ].map((n) => n + '.html');
 
 // 字體預載：手機端無本機 MingLiu，提前搶先下載，避免正文先以系統字體閃現

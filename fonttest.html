@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>字體診斷 / font test</title>
+<link rel="stylesheet" href="css/theme.css">
+<style>
+  body { margin: 0; padding: 14px 12px 40px; background: #fff; color: #111; }
+  h1 { font-size: 18px; margin: 0 0 .6rem; }
+  h2 { font-size: 15px; margin: 1.2rem 0 .4rem; }
+  .meta, .row { font-size: 12px; line-height: 1.5; color: #333; }
+  .item { border-top: 1px solid #ddd; padding: .55rem 0; }
+  .name { font: 700 12px/1.4 ui-monospace, Menlo, monospace; }
+  .res { font: 12px/1.5 ui-monospace, Menlo, monospace; white-space: pre-wrap; word-break: break-all; }
+  .ok { color: #137333; }
+  .bad { color: #c5221f; }
+  .sample { font-size: 26px; line-height: 1.5; margin-top: .2rem; }
+  pre { font: 11px/1.45 ui-monospace, Menlo, monospace; white-space: pre-wrap; word-break: break-all; background: #f4f4f4; padding: .5rem; border-radius: 6px; }
+</style>
+</head>
+<body>
+<h1>字體診斷</h1>
+<div class="meta" id="ua"></div>
+
+<h2>1. 站上實際使用的 @font-face（css/theme.css）</h2>
+<div class="item">
+  <div class="name">MingLiu（theme.css 內宣告）</div>
+  <div class="res" id="siteRes">檢查中…</div>
+  <div class="sample" style="font-family:'MingLiu', sans-serif">法規查詢系統：彙整命令與會議紀錄</div>
+</div>
+
+<h2>2. 各種載入方式</h2>
+<div id="variants"></div>
+
+<h2>3. 瀏覽器實際發出的字體請求</h2>
+<pre id="res">（等字體載入中…）</pre>
+
+<h2>4. 原始資料</h2>
+<pre id="raw"></pre>
+
+<script>
+const TEST = '法規查詢系統';
+const variants = [
+  { name: 'A-small-url-only',   src: "url('css/fonts/fonttest-small.woff2')",                       sample: 'small woff2，無 format()' },
+  { name: 'B-small-woff2',      src: "url('css/fonts/fonttest-small.woff2') format('woff2')",       sample: 'small woff2 + format(\'woff2\')' },
+  { name: 'C-full-woff2',       src: "url('css/fonts/mingliu-subset.woff2') format('woff2')",       sample: '完整 2.3MB woff2 + format' },
+  { name: 'D-full-local-range', src: "local('MingLiU'), local('細明體'), local('MingLiU_HKSCS'), url('css/fonts/mingliu-subset.woff2') format('woff2')",
+    desc: { unicodeRange: 'U+0000-00FF, U+2010-2027, U+2100-214F, U+2460-24FF, U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FF00-FFEF' },
+    sample: '完整 woff2 + local() + unicode-range（站上寫法）' },
+  { name: 'E-full-range',       src: "url('css/fonts/mingliu-subset.woff2') format('woff2')",
+    desc: { unicodeRange: 'U+0000-00FF, U+3000-303F, U+4E00-9FFF, U+FF00-FFEF' },
+    sample: '完整 woff2 + unicode-range（無 local）' },
+  { name: 'F-small-ttf',        src: "url('css/fonts/fonttest-small.ttf') format('truetype')",      sample: 'small ttf + format(\'truetype\')' },
+];
+
+const state = { ua: navigator.userAgent, platform: navigator.platform, dpr: devicePixelRatio, vw: innerWidth, variants: {}, site: {}, resources: [] };
+
+document.getElementById('ua').textContent =
+  'UA: ' + navigator.userAgent + '\nplatform: ' + navigator.platform + ' · dpr: ' + devicePixelRatio + ' · viewport: ' + innerWidth;
+
+const withTimeout = (p, ms) => Promise.race([
+  p.then(v => ({ ok: true, value: v })).catch(e => ({ ok: false, error: (e && (e.name + ': ' + e.message)) || String(e) })),
+  new Promise(r => setTimeout(() => r({ ok: false, error: 'timeout ' + ms + 'ms' }), ms))
+]);
+
+function measure(family, text = TEST, size = 32) {
+  const c = document.createElement('canvas').getContext('2d');
+  c.font = size + 'px ' + family + ', monospace';
+  return Math.round(c.measureText(text).width * 100) / 100;
+}
+
+const wrap = document.getElementById('variants');
+
+(async () => {
+  const base = measure('monospace');
+  state.monoWidth = base;
+
+  for (const v of variants) {
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = `<div class="name">${v.name}</div>
+      <div class="res" id="r-${v.name}">載入中…</div>
+      <div class="sample" style="font-family:'${v.name}', sans-serif">${v.sample}<br>法規查詢系統：彙整命令與會議紀錄</div>`;
+    wrap.appendChild(el);
+
+    let res;
+    try {
+      const ff = new FontFace(v.name, v.src, v.desc || {});
+      document.fonts.add(ff);
+      res = await withTimeout(ff.load(), 45000);
+      res.status = ff.status;
+    } catch (e) {
+      res = { ok: false, error: 'construct: ' + e.message };
+    }
+    const w = measure(`'${v.name}'`);
+    state.variants[v.name] = { ...res, width: w, vsMono: Math.round((w - base) * 100) / 100 };
+    document.getElementById('r-' + v.name).innerHTML =
+      (res.ok ? '<span class="ok">載入成功</span>' : '<span class="bad">載入失敗：' + (res.error || '?') + '</span>') +
+      `\nstatus=${res.status} · width=${w} (monospace=${base})`;
+  }
+
+  // 站上 @font-face 的實際結果
+  const siteFF = [...document.fonts].filter(f => f.family.replace(/['"]/g, '') === 'MingLiu');
+  const siteRes = document.getElementById('siteRes');
+  if (!siteFF.length) {
+    state.site = { declared: false };
+    siteRes.innerHTML = '<span class="bad">theme.css 裡找不到 MingLiu 這個 @font-face（CSS 可能沒解析）</span>';
+  } else {
+    const ff = siteFF[0];
+    const r = await withTimeout(document.fonts.load("16px 'MingLiu'", TEST), 45000);
+    state.site = { declared: true, status: ff.status, load: r, width: measure("'MingLiu'"), check: document.fonts.check("16px 'MingLiu'", TEST) };
+    siteRes.innerHTML =
+      (ff.status === 'loaded' && r.ok
+        ? '<span class="ok">站上字體可用</span>'
+        : '<span class="bad">站上字體不可用</span>') +
+      `\nstatus=${ff.status} · check=${state.site.check} · load=${r.ok ? 'ok' : r.error}`;
+  }
+
+  // 資源請求
+  state.resources = performance.getEntriesByType('resource')
+    .filter(e => /woff2|ttf/.test(e.name))
+    .map(e => ({ name: e.name.split('/').pop(), status: e.responseStatus, transfer: e.transferSize, dur: Math.round(e.duration) }));
+  document.getElementById('res').textContent = JSON.stringify(state.resources, null, 1);
+  document.getElementById('raw').textContent = JSON.stringify({
+    ua: state.ua, platform: state.platform, dpr: state.dpr, vw: state.vw,
+    monoWidth: state.monoWidth,
+    site: state.site,
+    variants: state.variants,
+    fonts: [...document.fonts].map(f => f.family + ':' + f.status)
+  }, null, 1);
+  window.__done = true;
+})();
+</script>
+</body>
+</html>
