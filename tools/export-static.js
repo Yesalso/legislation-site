@@ -126,7 +126,12 @@ function main() {
     throw new Error('找不到 index.html，請在倉庫根目錄執行');
   }
 
-  rimraf(SITE);
+  // --no-clean：不清空 site/，就地覆寫（site/ 是 .gitignore 的建置產物；避免一次刪上千檔撞安全守衛）
+  if (process.argv.includes('--no-clean')) {
+    console.log('  （--no-clean：不清空 site/，就地覆寫）');
+  } else {
+    rimraf(SITE);
+  }
   fs.mkdirSync(SITE, { recursive: true });
 
   // ---------- 1. 页面：复制 + 注入拦截器 ----------

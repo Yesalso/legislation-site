@@ -18,7 +18,9 @@
     "test:unit": "node tests/run.js --only=articles --only=tags --only=dates",
     "test:self": "node tools/lib/self-test.js",
     "scan": "node tools/scan-documents.js",
-    "diff": "node tools/diff-docs-vs-library.js"
+    "diff": "node tools/diff-docs-vs-library.js",
+    "publish:site": "node tools/publish-site.js",
+    "snapshot:clean": "node tools/export-snapshot.js"
   },
   "dependencies": {
     "gray-matter": "^4.0.3"
