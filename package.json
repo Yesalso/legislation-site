@@ -20,6 +20,8 @@
     "scan": "node tools/scan-documents.js",
     "diff": "node tools/diff-docs-vs-library.js",
     "publish:site": "node tools/publish-site.js",
+    "deploy": "node tools/publish-site.js",
+    "sync": "node tools/sync-laws.js",
     "snapshot:clean": "node tools/export-snapshot.js"
   },
   "dependencies": {
